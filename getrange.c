@@ -1,6 +1,8 @@
 #include <stdio.h>  // printf
 #include <stdlib.h> // exit
 
+#include "connor.h"
+
 void usage(const char *prog)
 {
 	printf("usage: %s host port path start-end\n", prog);
