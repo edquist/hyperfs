@@ -30,29 +30,26 @@ int getconn(int sock, const struct addrinfo *rp)
 
 int connect_first(const struct addrinfo *rp)
 {
-	int sock;
-
 	// follow list of addresses until socket+connect succeeds
 	for (; rp; rp = rp->ai_next) {
+		int sock;
+
 		if ((sock = getsock(rp)) < 0)
 			continue;
 
 		if (getconn(sock, rp) == 0)
-			break;  // Success
+			return sock;
 
 		close(sock);
 	}
 
-	return rp ? sock : -1;
+	return -1;
 }
 
 int tcp_connect(const char *host, const char *port)
 {
-
-        struct addrinfo *result;
-        int s;
-
-	int sock;
+	struct addrinfo *result;
+	int err, sock;
 
 	struct addrinfo hints = {
 		.ai_family   = AF_INET,
@@ -61,10 +58,10 @@ int tcp_connect(const char *host, const char *port)
 		.ai_protocol = IPPROTO_TCP
 	};
 
-	s = getaddrinfo(host, port, &hints, &result);
+	err = getaddrinfo(host, port, &hints, &result);
 
-	if (s != 0) {
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+	if (err) {
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(err));
 		exit(1);
 	}
 
