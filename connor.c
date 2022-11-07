@@ -1,5 +1,3 @@
-#define _POSIX_C_SOURCE 201112L
-
 #include <stdio.h>       // printf
 #include <stdlib.h>      // exit
 #include <sys/types.h>

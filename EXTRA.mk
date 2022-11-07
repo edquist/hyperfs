@@ -1,5 +1,6 @@
 # extra recipes
 
+DEFINES = -D_POSIX_C_SOURCE=201112L
 
 ## compile 'main' source for each program with -fwhole-program
 #
