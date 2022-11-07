@@ -16,16 +16,19 @@
 //             sin_addr=inet_addr("192.168.1.6")}, 16) = 0
 
 
+static
 int getsock(const struct addrinfo *rp)
 {
 	return socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 }
 
+static
 int getconn(int sock, const struct addrinfo *rp)
 {
 	return connect(sock, rp->ai_addr, rp->ai_addrlen);
 }
 
+static
 int connect_first(const struct addrinfo *rp)
 {
 	// follow list of addresses until socket+connect succeeds
