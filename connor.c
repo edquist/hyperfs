@@ -77,3 +77,6 @@ int tcp_connect(const char *host, const char *port)
 	return sock;
 }
 
+
+/* vim: set noexpandtab sts=0 sw=8 ts=8: */
+

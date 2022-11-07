@@ -12,3 +12,7 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+
+/* vim: set noexpandtab sts=0 sw=8 ts=8: */
+
