@@ -6,7 +6,7 @@
 
 void usage(const char *prog)
 {
-	printf("usage: %s host port path start end\n", prog);
+	fprintf(stderr, "usage: %s host port path start end\n", prog);
 	exit(0);
 }
 
