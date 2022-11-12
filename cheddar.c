@@ -79,6 +79,11 @@ int get_resp_data(FILE *in, char *dest, size_t *len)
 		return ret;
 	}
 	fprintf(stderr, "code %d\n", info.code);
+	if (info.code == 301 || info.code == 302) {
+		// Moved Permanently, or Found; follow Location header
+
+	}
+
 	if (info.code < 200 || info.code > 299)
 		return -info.code;
 
