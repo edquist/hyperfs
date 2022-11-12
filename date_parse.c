@@ -49,6 +49,18 @@ int sa2i(const char **sp)
 	}
 }
 
+/* date_parse - aspiringly fast http date header parser
+ *
+ * essentially equivalent to:
+ *
+ *   const char *fmt = "%a, %d %b %Y %H:%M:%S GMT";
+ *   struct tm ts;
+ *   int tz;
+ *   char *ts_start = strptime(dstring, fmt, &ts);
+ *   sscanf(ts_start, "%d", &tz);
+ *   return timegm(&ts) - tz * 36;  // 36 == 60 * 60 / 100
+ *
+ */
 long date_parse(const char *s)
 {
 	if (isalpha(s[0]) && isalpha(s[1]) && isalpha(s[2]) && s[3] == ',')
