@@ -49,7 +49,7 @@ int sa2i(const char **sp)
 	}
 }
 
-long date_parse2(const char *s)
+long date_parse(const char *s)
 {
 	if (isalpha(s[0]) && isalpha(s[1]) && isalpha(s[2]) && s[3] == ',')
 		s += 4;
