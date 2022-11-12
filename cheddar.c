@@ -36,6 +36,10 @@ int get_resp_info(FILE *in, struct resp_info *info)
 			info->content_length = atoi(p);
 		} else if ((p = pfxmatch("Last-Modified: ", buf))) {
 			info->last_modified = date_parse(p);
+			if (info->last_modified < 0) {
+				fprintf(stderr, "failed to parse Last-Modified"
+					" value: [%.29s]\n", p);
+			}
 		}
 	}
 
