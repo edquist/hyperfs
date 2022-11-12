@@ -83,41 +83,6 @@ long date_parse2(const char *s)
 	return epoch(&ts);
 }
 
-#if 0
-// parse YYYY-MM-DD
-struct ymd ymd_parse(const char *s)
-{
-	const static struct ymd bad = {-1, -1, -1};
-
-	int year = a2i(&s);
-	if (*s++ != '-')
-		return bad;
-
-	int month = a2i(&s) - 1;
-	if (*s++ != '-')
-		return bad;
-
-	int day = a2i(&s) - 1;
-
-	struct ymd dt = {year, month, day};
-	return dt;
-}
-
-
-long ymd_localtime(const char *s)
-{
-	struct ymd dt = ymd_parse(s);
-
-	struct tm tm = {};
-	tm.tm_mday = dt.day + 1;
-	tm.tm_mon  = dt.month;
-	tm.tm_year = dt.year - 1900;
-	tm.tm_isdst = -1;
-
-	return mktime(&tm);
-}
-#endif
-
 
 /* vim: set noexpandtab sts=0 sw=8 ts=8: */
 
