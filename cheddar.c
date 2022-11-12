@@ -10,8 +10,7 @@ struct resp_info {
 	int code;
 	off_t content_length;
 	time_t last_modified;
-	// char server[64]
-	// char content_type[80]
+	char location[1024];
 };
 
 static
@@ -22,11 +21,23 @@ char *pfxmatch(const char *pfx, const char *s)
 }
 
 static
+size_t hdrvalcpy(char *dest, const char *src)
+{
+	size_t len = strlen(src);
+	if (len >= 2 && src[len - 1] == '\n' && src[len - 2] == '\r')
+		len -= 2;
+	memcpy(dest, src, len);
+	dest[len] = '\0';
+	return len;
+}
+
+static
 int get_resp_info(FILE *in, struct resp_info *info)
 {
-	char buf[128], *p;
+	char buf[1024], *p;
 	info->content_length = 0;
 	info->last_modified = 0;
+	info->location[0] = 0;
 	if (!fgets(buf, sizeof buf, in))              return -1;
 	if (sscanf(buf, "%*s %d ", &info->code) != 1) return -2;
 	while (fgets(buf, sizeof buf, in)) {
@@ -38,6 +49,8 @@ int get_resp_info(FILE *in, struct resp_info *info)
 			info->content_length = atoi(p);
 		} else if ((p = pfxmatch("Last-Modified: ", buf))) {
 			info->last_modified = date_parse(p);
+		} else if ((p = pfxmatch("Location: ", buf))) {
+			hdrvalcpy(info->location, p);
 		}
 	}
 
