@@ -89,7 +89,9 @@ long date_parse(const char *s)
 	int sec = a2i(&s);
 	s = skipsp(s);
 
-	int tz = sa2i(&s);
+	if (s[0] != 'G' || s[1] != 'M' || s[2] != 'T')
+		return -1;
+	int tz = 0;
 
 	struct ymdhmsz ts = {{year, month, day}, {hour, min, sec}, tz};
 	return epoch(&ts);
