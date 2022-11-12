@@ -2,11 +2,14 @@
 #include <stdlib.h>  // atoi
 #include <string.h>  // strlen
 #include <strings.h> // strncasecmp
+#include <time.h>    // time_t
+
+#include "date_parse.h"
 
 struct resp_info {
 	int code;
 	off_t content_length;
-	// time_t date;
+	time_t last_modified;
 	// char server[64]
 	// char content_type[80]
 };
@@ -31,8 +34,8 @@ int get_resp_info(FILE *in, struct resp_info *info)
 		}
 		if ((p = pfxmatch("Content-Length: ", buf))) {
 			info->content_length = atoi(p);
-//		} else if ((p = pfxmatch("Last-Modified: ", buf))) {
-//			info->date = ...
+		} else if ((p = pfxmatch("Last-Modified: ", buf))) {
+			info->last_modified = date_parse(p);
 		}
 	}
 
