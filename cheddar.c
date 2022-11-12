@@ -46,33 +46,6 @@ int get_resp_info(FILE *in, struct resp_info *info)
 	return -4;
 }
 
-size_t pump(FILE *in, FILE *out, size_t len)
-{
-	char buf[8 * 1024];
-	size_t rem = len;
-	while (rem) {
-		size_t n = rem > sizeof buf ? sizeof buf : rem;
-		size_t got = fread(buf, 1, n, in);
-		if (got < n) {
-			// ferror(in);
-			fprintf(stderr, "unexpected short read count\n");
-		}
-
-		size_t sent = fwrite(buf, 1, got, out);
-		rem -= sent;
-
-		if (sent < got) {
-			// ferror(in);
-			fprintf(stderr, "unexpected short write count\n");
-		}
-
-		if (sent < n)
-			break;
-	}
-
-	return len - rem;
-}
-
 
 int get_resp_data(FILE *in, char *dest, size_t *len)
 {
@@ -102,8 +75,6 @@ int get_resp_data(FILE *in, char *dest, size_t *len)
 		}
 	}
 
-	//size_t sent = pump(in, out, info.content_length);
-	
 	*len = fread(dest, 1, info.content_length, in);
 
 	if (info.content_length != *len) {
