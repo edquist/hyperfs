@@ -17,14 +17,17 @@
 
 int month_idx(const char *short_month_name)
 {
-    static const int idx[21] = {-1, -1,  7, 10, -1, 2, 11,
-                                 1,  3, -1, -1,  9, 4,  8,
-                                -1, -1,  6, -1,  5, 0, -1};
-
-    int key = (short_month_name[0] | ' ')
-            + (short_month_name[1] | ' ')
-            + (short_month_name[2] | ' ');
-
-    return idx[key % 21];
+	static const int idx[21] = {-1, -1,  7, 10, -1, 2, 11,
+	                             1,  3, -1, -1,  9, 4,  8,
+	                            -1, -1,  6, -1,  5, 0, -1};
+	
+	int key = (short_month_name[0] | ' ')
+	        + (short_month_name[1] | ' ')
+	        + (short_month_name[2] | ' ');
+	
+	return idx[key % 21];
 }
+
+
+/* vim: set noexpandtab sts=0 sw=8 ts=8: */
 
