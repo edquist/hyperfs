@@ -49,7 +49,25 @@ int sa2i(const char **sp)
 	}
 }
 
-/* date_parse - aspiringly fast http date header parser
+// exactly 2 digits version
+inline static
+int a2i2(const char *s)
+{
+	// XXX: assumes (isnum(s[0]) && isnum(s[1]))
+
+	return s[0] * 10 + s[1] - ('0' * 11);
+}
+
+// exactly 4 digits version
+inline static
+int a2i4(const char *s)
+{
+	return a2i2(s) * 100 + a2i2(s + 2);
+}
+
+/* date_parse - parse http date header, aspiringly fast
+ *
+ * "Last-Modified: Wed, 09 Nov 2022 11:12:50 GMT"
  *
  * essentially equivalent to:
  *
@@ -68,29 +86,39 @@ long date_parse(const char *s)
 
 	s = skipsp(s);
 
-	int day = a2i(&s) - 1;
-	s = skipsp(s);
+	int day = a2i2(s) - 1;
+	s += 2;
+	if (*s++ != ' ')
+		return -1;
 
 	int month = month_idx(s);
 	s += 3;
-	s = skipsp(s);
+	if (*s++ != ' ')
+		return -1;
 
-	int year = a2i(&s);
-	s = skipsp(s);
+	int year = a2i4(s);
+	s += 4;
+	if (*s++ != ' ')
+		return -1;
 
-	int hour = a2i(&s);
+	int hour = a2i2(s);
+	s += 2;
 	if (*s++ != ':')
 		return -1;
 
-	int min = a2i(&s);
+	int min = a2i2(s);
+	s += 2;
 	if (*s++ != ':')
 		return -1;
 
-	int sec = a2i(&s);
-	s = skipsp(s);
+	int sec = a2i2(s);
+	s += 2;
+	if (*s++ != ' ')
+		return -1;
 
 	if (s[0] != 'G' || s[1] != 'M' || s[2] != 'T')
 		return -1;
+
 	int tz = 0;
 
 	struct ymdhmsz ts = {{year, month, day}, {hour, min, sec}, tz};
