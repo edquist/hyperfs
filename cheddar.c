@@ -21,11 +21,13 @@ char *pfxmatch(const char *pfx, const char *s)
 }
 
 static
-size_t hdrvalcpy(char *dest, const char *src)
+size_t hdrvalcpy(char *dest, const char *src, size_t dstsize)
 {
 	size_t len = strlen(src);
 	if (len >= 2 && src[len - 1] == '\n' && src[len - 2] == '\r')
 		len -= 2;
+	if (len >= dstsize)
+		len = dstsize - 1;
 	memcpy(dest, src, len);
 	dest[len] = '\0';
 	return len;
@@ -50,7 +52,7 @@ int get_resp_info(FILE *in, struct resp_info *info)
 		} else if ((p = pfxmatch("Last-Modified: ", buf))) {
 			info->last_modified = date_parse(p);
 		} else if ((p = pfxmatch("Location: ", buf))) {
-			hdrvalcpy(info->location, p);
+			hdrvalcpy(info->location, p, sizeof info->location);
 		}
 	}
 
