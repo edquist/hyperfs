@@ -5,6 +5,7 @@
 #include <time.h>    // time_t
 
 #include "date_parse.h"
+#include "drainf.h"
 
 struct resp_info {
 	int code;
@@ -72,10 +73,11 @@ int get_resp_data(FILE *in, char *dest, size_t *len)
 	if (info.code == 301 || info.code == 302) {
 		// Moved Permanently, or Found; follow Location header
 
-	}
-
-	if (info.code < 200 || info.code > 299)
+	} else if (info.code < 200 || info.code > 299) {
+		if (info.content_length > 0)
+			drainf(in, info.content_length);
 		return -info.code;
+	}
 
 	if (info.content_length != *len) {
 		fprintf(stderr,
@@ -84,6 +86,7 @@ int get_resp_data(FILE *in, char *dest, size_t *len)
 
 		if (info.content_length > *len) {
 			fprintf(stderr, "more than we asked for!\n");
+			drainf(in, info.content_length);
 			return -10;
 		}
 	}
