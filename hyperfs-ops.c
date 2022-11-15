@@ -3,7 +3,7 @@
 // #define _XOPEN_SOURCE 500
 // #define _GNU_SOURCE
 
-// #include <fuse.h>
+#include <fuse.h>      // struct fuse_operations
 
 #include <stdio.h>     // FILE
 #include <errno.h>     // errno
@@ -42,6 +42,11 @@ int hyperfs_getattr(const char *path, struct stat *stbuf)
 
 	return 0;
 }
+
+
+struct fuse_operations hyperfs_ops = {
+	.getattr = hyperfs_getattr
+};
 
 
 /* vim: set noexpandtab sts=0 sw=8 ts=8: */
