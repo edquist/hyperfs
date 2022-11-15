@@ -12,6 +12,11 @@
 #define MAX_PATH_NODES (1024 * 1024)
 #define PATHNAME_BUFSZ (64 * 1024 * 1024)
 
+// TODO: make these smaller buffers/objects (eg 1mb each), but make them
+//       linked lists to allow for growth as needed.  the lists never need
+//       to be traversed again except for free_cache, as they just provide
+//       storage space for the hash table entries (key & data)
+
 static struct hsearch_data statcache;
 static char  *pathbuf;
 static char  *pathbuf_next;
