@@ -1,5 +1,3 @@
-#define FUSE_USE_VERSION 26
-
 // #define _XOPEN_SOURCE 500
 // #define _GNU_SOURCE
 

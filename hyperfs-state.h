@@ -1,7 +1,5 @@
 #pragma once
 
-#define FUSE_USE_VERSION 26
-
 #include <fuse.h>      // fuse_get_context
 
 
