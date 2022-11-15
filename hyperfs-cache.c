@@ -3,7 +3,8 @@
 #include <stdint.h>    // uint64_t
 #include <stdio.h>     // perror
 #include <stdlib.h>    // exit
-#include <string.h>    // strlen, memcpy
+#include <string.h>    // strlen, memcpy, memset
+#include <sys/stat.h>  // struct stat
 
 #include "hyperfs-cache.h"  // struct ministat
 
@@ -100,6 +101,17 @@ int set_cached_path_info(const char *path, const struct ministat *st)
 	return ret ? 0 : -1;
 }
 
+void expand_ministat(const struct ministat *mst, struct stat *st)
+{
+	memset(st, 0, sizeof (struct stat));
+	st->st_mode = mst->type == S_IFDIR ? 0755 | S_IFDIR
+	                                   : 0644 | S_IFREG;
+	st->st_nlink = 1;
+	st->st_size  = mst->size;
+	st->st_atime = mst->mtime;
+	st->st_mtime = mst->mtime;
+	st->st_ctime = mst->mtime;
+}
 
 /* vim: set noexpandtab sts=0 sw=8 ts=8: */
 
