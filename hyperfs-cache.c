@@ -7,28 +7,6 @@
 
 #include "hyperfs-cache.h"  // struct ministat
 
-#if 0
-
-int hcreate_r(size_t nel, struct hsearch_data *htab);
-
-int hsearch_r(ENTRY item, ACTION action, ENTRY **retval,
-              struct hsearch_data *htab);
-
-void hdestroy_r(struct hsearch_data *htab);
-
-typedef struct entry {
-    char *key;
-    void *data;
-} ENTRY;
-
-The argument action determines what hsearch() does after an  unsuccess-
-ful  search.   This  argument must either have the value ENTER, meaning
-insert a copy of item (and return a pointer to the new hash table entry
-as the function result), or the value FIND, meaning that NULL should be
-returned.  (If action is FIND, then data is ignored.)
-
-#endif
-
 
 #define MAX_PATH_NODES (1024 * 1024)
 #define PATHNAME_BUFSZ (64 * 1024 * 1024)
