@@ -38,14 +38,14 @@ static
 int get_resp_info(FILE *in, struct resp_info *info)
 {
 	char buf[1024], *p;
-	info->content_length = 0;
+	info->content_length = -1;
 	info->last_modified = 0;
 	info->location[0] = 0;
 	if (!fgets(buf, sizeof buf, in))              return -1;
 	if (sscanf(buf, "%*s %d ", &info->code) != 1) return -2;
 	while (fgets(buf, sizeof buf, in)) {
 		if (buf[0] == '\r') {
-			return info->content_length ? 0 : -3;
+			return info->content_length >= 0 ? 0 : -3;
 		}
 		// if (debug) fprintf(stderr, "< %s", buf);
 		if ((p = pfxmatch("Content-Length: ", buf))) {
