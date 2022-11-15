@@ -72,8 +72,10 @@ int get_resp_data(FILE *in, char *dest, size_t *len)
 	fprintf(stderr, "code %d\n", info.code);
 	if (info.code == 301 || info.code == 302) {
 		// Moved Permanently, or Found; follow Location header
+		fprintf(stderr, "Location: %s\n", info.location);
 
-	} else if (info.code < 200 || info.code > 299) {
+	}
+	if (info.code < 200 || info.code > 299) {
 		if (info.content_length > 0)
 			drainf(in, info.content_length);
 		return -info.code;
