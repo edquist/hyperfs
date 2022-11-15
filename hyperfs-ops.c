@@ -11,6 +11,7 @@
 #include <sys/stat.h>  // struct stat
 
 #include "hyperfs-cache.h"
+#include "hyperfs-state.h"
 
 
 static FILE *logger;
