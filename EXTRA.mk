@@ -1,8 +1,13 @@
 # extra recipes
 
 DEFINES  = -D_POSIX_C_SOURCE=201112L
-DEFINES += -D_FILE_OFFSET_BITS=64
 DEFINES += -DFUSE_USE_VERSION=26
+
+PCFG_CFLAGS := $(shell pkg-config fuse --cflags)
+PCFG_LIBS   := $(shell pkg-config fuse --libs)
+
+CPPFLAGS += $(PCFG_CFLAGS)
+LDLIBS   += $(PCFG_LIBS)
 
 ## compile 'main' source for each program with -fwhole-program
 #
