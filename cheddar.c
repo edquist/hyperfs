@@ -6,13 +6,7 @@
 
 #include "date_parse.h"
 #include "drainf.h"
-
-struct resp_info {
-	int code;
-	off_t content_length;
-	time_t last_modified;
-	char location[1024];
-};
+#include "cheddar.h"
 
 static
 char *pfxmatch(const char *pfx, const char *s)
@@ -34,7 +28,6 @@ size_t hdrvalcpy(char *dest, const char *src, size_t dstsize)
 	return len;
 }
 
-static
 int get_resp_info(FILE *in, struct resp_info *info)
 {
 	char buf[1024], *p;
