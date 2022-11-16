@@ -10,11 +10,22 @@
 
 #include "hyperfs-cache.h"
 #include "hyperfs-state.h"
+#include "cheddar.h"
 
 
 static FILE *logger;
 
 #define LOG(...) do { if (logger) fprintf(logger, __VA_ARGS__); } while (0)
+
+
+int get_http_path_info(
+	struct hyperfs_state *remote_info,
+	const  char          *path,
+	struct ministat      *info)
+{
+
+	return 0;
+}
 
 
 // static
