@@ -11,11 +11,7 @@
 #include "hyperfs-cache.h"
 #include "hyperfs-state.h"
 #include "cheddar.h"
-
-
-static FILE *logger;
-
-#define LOG(...) do { if (logger) fprintf(logger, __VA_ARGS__); } while (0)
+#include "logger.h"
 
 
 int get_http_path_info(
