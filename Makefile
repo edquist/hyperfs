@@ -7,8 +7,9 @@
 
 RM = rm -rf
 CC = gcc
-CFLAGS = -Wall -O3 $(WIPFLAGS)
-CPPFLAGS = -std=c99 $(DEPFLAGS) $(DEFINES)
+LANG_STD = -std=c99
+CFLAGS   = -Wall -O3 $(WIPFLAGS)
+CPPFLAGS = $(LANG_STD) $(DEPFLAGS) $(DEFINES)
 DEPFLAGS = -MMD -MP -MF $(DREC) -MT $(OREC) -MT $(AREC)
 
 ifdef WIP
