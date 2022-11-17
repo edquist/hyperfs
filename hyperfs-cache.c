@@ -69,7 +69,6 @@ int get_cached_path_info(const char *path, struct ministat *st)
 	return ret ? 0 : -1;
 }
 
-static
 char *addpath(const char *path)
 {
 	size_t len = strlen(path) + 1;  // include NUL terminator
