@@ -11,6 +11,8 @@
 
 #define MAX_PATH_NODES (1024 * 1024)
 #define PATHNAME_BUFSZ (64 * 1024 * 1024)
+#define LISTNODE_BUFSZ (1024 * 1024)
+#define LIST_BUFSZ     (LISTNODE_BUFSZ - sizeof (void *))
 
 // TODO: make these smaller buffers/objects (eg 1mb each), but make them
 //       linked lists to allow for growth as needed.  the lists never need
@@ -18,6 +20,28 @@
 //       storage space for the hash table entries (key & data)
 
 static struct hsearch_data statcache;
+
+struct pathbuf_list {
+	struct pathbuf_list *next_list;
+	char                 buf[LIST_BUFSZ];
+	char                 bufend[0];
+};
+
+struct statbuf_list {
+	struct statbuf_list *next_list;
+	struct ministat      buf[LIST_BUFSZ / sizeof (struct ministat)];
+	struct ministat      bufend[0];
+};
+
+static struct pathbuf_list *pathbuf0;
+static struct pathbuf_list *pathbuf_cur;
+static char                *pathbuf_buf;
+
+static struct statbuf_list *statbuf0;
+static struct statbuf_list *statbuf_cur;
+static struct ministat     *statbuf_buf;
+
+#if 0
 static char  *pathbuf;
 static char  *pathbuf_next;
 static char  *pathbuf_end;
@@ -25,6 +49,7 @@ static char  *pathbuf_end;
 static struct ministat *statbuf;
 static struct ministat *statbuf_next;
 static struct ministat *statbuf_end;
+#endif
 
 
 void init_cache()
@@ -34,6 +59,19 @@ void init_cache()
 		perror("hcreate_r");
 		exit(1);
 	}
+	pathbuf0 = pathbuf_cur = malloc(sizeof (struct pathbuf_list));
+	statbuf0 = statbuf_cur = malloc(sizeof (struct statbuf_list));
+	if (!pathbuf0 || !statbuf0) {
+		perror("malloc");
+		exit(1);
+	}
+	pathbuf_cur->next_list = NULL;
+	pathbuf_buf = pathbuf_cur->buf;
+
+	statbuf_cur->next_list = NULL;
+	statbuf_buf = statbuf_cur->buf;
+
+#if 0
 	pathbuf = malloc(PATHNAME_BUFSZ);
 	pathbuf_next = pathbuf;
 	pathbuf_end  = pathbuf + PATHNAME_BUFSZ;
@@ -48,6 +86,7 @@ void init_cache()
 		perror("malloc");
 		exit(1);
 	}
+#endif
 }
 
 void free_cache()
