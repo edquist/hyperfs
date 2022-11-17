@@ -6,7 +6,7 @@
 #include <string.h>    // strlen, memcpy, memset
 #include <sys/stat.h>  // struct stat
 
-#include "hyperfs-cache.h"  // struct ministat
+#include "ministat.h"  // struct ministat
 
 
 #define MAX_PATH_NODES (1024 * 1024)

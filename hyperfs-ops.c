@@ -9,6 +9,7 @@
 #include "hyperfs-state.h"
 #include "cheddar.h"
 #include "logger.h"
+#include "ministat.h"       // get_cached_path_info, set_cached_path_info
 
 
 int get_http_path_info(
