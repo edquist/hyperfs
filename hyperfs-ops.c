@@ -3,7 +3,7 @@
 #include <stdio.h>     // FILE
 #include <errno.h>     // errno
 #include <time.h>      // time_t
-#include <sys/stat.h>  // struct stat, S_IFREG
+#include <sys/stat.h>  // S_IFREG, S_IFDIR, S_IFLNK (weak: struct stat *)
 #include <string.h>    // strerror, strstr
 
 #include "hyperfs-cache.h"  // get_cached_path_info, set_cached_path_info
@@ -130,24 +130,18 @@ int get_http_path_info(
 // static
 int hyperfs_getattr(const char *path, struct stat *stbuf)
 {
-	int res;
+	LOG("[getattr: '%s']\n", path);
 
 	struct ministat mst;
 	if (get_cached_path_info(path, &mst) < 0) {
 
-		// 1. fill mst properly, eg:
-		//    get_http_path_info(serverinfo, path, &mst);
-
-		// 2. Then:
+		int ret = get_http_path_info(path, &mst);
+		if (ret < 0)
+			return -ENOENT;  // XXX: EIO for connection failure
 
 		set_cached_path_info(path, &mst);  // ignore failure
 	}
 	expand_ministat(&mst, stbuf);
-
-	LOG("[getattr: '%s']\n", path);
-	res = lstat(path, stbuf);
-	if (res == -1)
-		return -errno;
 
 	return 0;
 }
