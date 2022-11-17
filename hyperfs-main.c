@@ -1,13 +1,15 @@
 #include <fuse.h>   // fuse_main
 
-#include <stdio.h>  // printf
+#include <stdio.h>  // printf, perror
 #include <stdlib.h> // exit
+#include <string.h> // strlen, strcpy
 
 #include "hyperfs-ops.h"    // hyperfs_ops
 #include "hyperfs-cache.h"  // init_cache, free_cache
 #include "hyperfs-state.h"  // struct hyperfs_state
 #include "logger.h"         // init_logger
 
+static
 void usage(const char *prog)
 {
 	printf("usage: %s [http://]host[:port][/path/] mountpoint "
@@ -15,6 +17,35 @@ void usage(const char *prog)
 	exit(0);
 }
 
+static
+void shift_n_push(int argc, /*const*/ char **argv, /*const*/ char *item)
+{
+	int i;
+	for (i = 0; i < argc - 1; i++)
+		argv[i] = argv[i + 1];
+	argv[argc - 1] = item;
+}
+
+static
+char *get_fsname_opt(const char *url)
+{
+	static const char *opt = "-ofsname=";
+	size_t len = strlen(opt) + strlen(url);
+	char *buf = malloc(len + 1);
+	if (!buf) {
+		perror("malloc");
+		exit(1);
+	}
+	strcpy(buf, opt);
+	strcpy(buf + strlen(opt), url);
+	return buf;
+}
+
+static
+void parse_url(const char *url, struct hyperfs_state *state)
+{
+	// TODO: ...
+}
 
 int main(int argc, char **argv, char **envp)
 {
@@ -24,13 +55,22 @@ int main(int argc, char **argv, char **envp)
 	if (argc < 3)
 		usage(argv[0]);
 
-	// parse args ...
+	char *url = argv[1];
+	// char *mountpoint = argv[2];  // we don't actually look at this
+
+	parse_url(url, &state);
+
+	// shift url off front of argv[1:], push fsname_opt onto the end
+	char *fsname_opt = get_fsname_opt(url);
+	shift_n_push(argc + 1, argv + 1, fsname_opt);
 
 	init_logger();
+	LOG("[hyperfs: Greets!]\n");
 	init_cache();
 	res = fuse_main(argc, argv, &hyperfs_ops, &state);
 
 	// cleanup as necessary
+	free(fsname_opt);
 	free_cache();
 
 	return res;
