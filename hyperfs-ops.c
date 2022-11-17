@@ -81,6 +81,14 @@ int get_http_path_info(
 	const  char     *path,
 	struct ministat *info)
 {
+
+	if (strcmp(path, "/") == 0) {
+		info->size  = 0;
+		info->mtime = 0;
+		info->type  = S_IFDIR;
+		return 0;
+	}
+
 	struct hyperfs_state *remote = get_hyperfs_state();
 
 	struct resp_info resp;
