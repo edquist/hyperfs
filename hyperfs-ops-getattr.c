@@ -104,7 +104,7 @@ int get_http_path_info(
 
 	if (ret < 0) {
 		LOG("[get_http_path_info: get_resp_info returned %d]\n", ret);
-		return ret;
+		return -EIO;  // XXX: stat(1) does not set EIO
 	}
 	if (resp.code == 301 || resp.code == 302) {
 		// Moved Permanently, or Found; follow Location header
@@ -125,9 +125,11 @@ int get_http_path_info(
 		info->size  = resp.content_length;
 		info->mtime = resp.last_modified;
 		info->type  = S_IFREG;
+	} else if (resp.code == 404) {
+		return -ENOENT;
 	} else {
 		LOG("[get_http_path_info: got %d for: %s]\n", resp.code, path);
-		return -1;  // interpret as ENOENT
+		return -EIO;  // XXX: stat(1) does not set EIO
 	}
 
 	return 0;
@@ -143,7 +145,7 @@ int hyperfs_getattr(const char *path, struct stat *stbuf)
 
 		int ret = get_http_path_info(path, &mst);
 		if (ret < 0)
-			return -ENOENT;  // XXX: EIO for connection failure
+			return ret;
 
 		set_cached_path_info(path, &mst);  // ignore failure
 	}
