@@ -8,7 +8,6 @@
 #include "drainf.h"
 #include "cheddar.h"
 
-static
 char *pfxmatch(const char *pfx, const char *s)
 {
 	size_t len = strlen(pfx);
