@@ -18,6 +18,18 @@ void usage(const char *prog)
 }
 
 static
+void parse_url(const char *url, struct hyperfs_state *state)
+{
+	state->proto    = "http";  // we insist...
+	state->host     = url;     // TODO: parse
+	state->port     = "80";
+	state->port_num = 80;
+	state->sockfd   = -1;
+	state->sockf    = NULL;
+}
+
+
+static
 void shift_n_push(int argc, /*const*/ char **argv, /*const*/ char *item)
 {
 	int i;
@@ -41,11 +53,6 @@ char *get_fsname_opt(const char *url)
 	return buf;
 }
 
-static
-void parse_url(const char *url, struct hyperfs_state *state)
-{
-	// TODO: ...
-}
 
 int main(int argc, char **argv, char **envp)
 {
