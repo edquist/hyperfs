@@ -5,7 +5,10 @@
 
 struct ministat {
 	uint64_t size;
-	time_t mtime;
+	union {
+		time_t  mtime;
+		char   *link;   // link target for type == S_IFLNK
+	};
 	int type;
 };
 
