@@ -1,5 +1,5 @@
 #define _GNU_SOURCE    // hcreate_r, etc
-#include <search.h>    // hcreate_r, etc
+#include <search.h>    // struct hsearch_data, hcreate_r, etc
 #include <stdint.h>    // uint64_t
 #include <stdio.h>     // perror
 #include <stdlib.h>    // exit
