@@ -12,6 +12,7 @@
 #include "logger.h"         // LOG
 
 
+static
 int get_head_info(
 	const  char          *host,
 	const  char          *port,
@@ -39,6 +40,8 @@ int get_head_info(
 	return ret;
 }
 
+
+static
 const char *skip_host(const char *location, const struct hyperfs_state *remote)
 {
 	if (!(location = pfxmatch(remote->proto, location))) return NULL;
@@ -53,6 +56,8 @@ const char *skip_host(const char *location, const struct hyperfs_state *remote)
 	return location[0] != '/' ? location : NULL;
 }
 
+
+static
 int location_path_adds_slash(const char *path, const char *location)
 {
 	size_t plen = strlen(path);
@@ -62,6 +67,8 @@ int location_path_adds_slash(const char *path, const char *location)
 	    && location[plen] == '/';
 }
 
+
+static
 int location_adds_slash(
 	const char *path,
 	const char *location,
@@ -75,6 +82,8 @@ int location_adds_slash(
 	return location_path_adds_slash(path, location);
 }
 
+
+static
 int get_http_path_info(
 	const  char     *path,
 	struct ministat *info)
