@@ -1,9 +1,7 @@
-#include <fuse.h>      // struct fuse_operations
-
 #include <stdio.h>     // FILE
 #include <errno.h>     // errno
 #include <time.h>      // time_t
-#include <sys/stat.h>  // S_IFREG, S_IFDIR, S_IFLNK (weak: struct stat *)
+#include <sys/stat.h>  // S_IFREG, S_IFDIR, S_IFLNK
 #include <string.h>    // strerror, strstr
 
 #include "hyperfs-cache.h"  // get_cached_path_info, set_cached_path_info
@@ -127,7 +125,6 @@ int get_http_path_info(
 }
 
 
-// static
 int hyperfs_getattr(const char *path, struct stat *stbuf)
 {
 	LOG("[getattr: '%s']\n", path);
@@ -145,11 +142,6 @@ int hyperfs_getattr(const char *path, struct stat *stbuf)
 
 	return 0;
 }
-
-
-struct fuse_operations hyperfs_ops = {
-	.getattr = hyperfs_getattr
-};
 
 
 /* vim: set noexpandtab sts=0 sw=8 ts=8: */
