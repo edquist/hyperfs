@@ -30,10 +30,9 @@ void parse_url(const char *url, struct hyperfs_state *state)
 
 
 static
-void shift_n_push(int argc, /*const*/ char **argv, /*const*/ char *item)
+void shift_n_push(int i, int argc, /*const*/ char **argv, /*const*/ char *item)
 {
-	int i;
-	for (i = 0; i < argc - 1; i++)
+	for (; i < argc - 1; i++)
 		argv[i] = argv[i + 1];
 	argv[argc - 1] = item;
 }
@@ -69,7 +68,7 @@ int main(int argc, char **argv, char **envp)
 
 	// shift url off front of argv[1:], push fsname_opt onto the end
 	char *fsname_opt = get_fsname_opt(url);
-	shift_n_push(argc + 1, argv + 1, fsname_opt);
+	shift_n_push(1, argc, argv, fsname_opt);
 
 	init_logger();
 	LOG("[hyperfs: Greets!]\n");
