@@ -53,7 +53,7 @@ const char *skip_host(const char *location, const struct hyperfs_state *remote)
 		if (!(location = pfxmatch(remote->port, location)))
 			return NULL;
 	}
-	return location[0] != '/' ? location : NULL;
+	return location[0] == '/' ? location : NULL;
 }
 
 
