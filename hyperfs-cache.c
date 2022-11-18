@@ -69,21 +69,21 @@ int get_cached_path_info(const char *path, struct ministat *st)
 	return ret ? 0 : -1;
 }
 
-char *get_pathbuf(size_t len)
+char *get_pathbuf(size_t size)
 {
 	char *ret = pathbuf_next;
-	if (pathbuf_next + len > pathbuf_end)
+	if (pathbuf_next + size > pathbuf_end)
 		return NULL;  // sorry we're full
-	pathbuf_next += len;
+	pathbuf_next += size;
 	return ret;
 }
 
 char *addpath(const char *path)
 {
-	size_t len = strlen(path) + 1;  // include NUL terminator
-	char *dest = get_pathbuf(len);
+	size_t size = strlen(path) + 1;  // include NUL terminator
+	char *dest = get_pathbuf(size);
 	if (dest)
-		memcpy(dest, path, len);
+		memcpy(dest, path, size);
 	return dest;
 }
 
