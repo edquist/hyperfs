@@ -78,13 +78,18 @@ char *get_pathbuf(size_t size)
 	return ret;
 }
 
+char *add_pathbuf(const char *buf, size_t size)
+{
+	char *dest = get_pathbuf(size);
+	if (dest)
+		memcpy(dest, buf, size);
+	return dest;
+}
+
 char *addpath(const char *path)
 {
 	size_t size = strlen(path) + 1;  // include NUL terminator
-	char *dest = get_pathbuf(size);
-	if (dest)
-		memcpy(dest, path, size);
-	return dest;
+	return add_pathbuf(path, size);
 }
 
 static
