@@ -7,7 +7,7 @@
 #include <sys/stat.h>  // struct stat
 
 #include "ministat.h"  // struct ministat
-
+#include "logger.h"    // LOG
 
 #define MAX_PATH_NODES (1024 * 1024)
 #define PATHNAME_BUFSZ (64 * 1024 * 1024)
@@ -108,8 +108,14 @@ int set_cached_path_info(const char *path, const struct ministat *st)
 void expand_ministat(const struct ministat *mst, struct stat *st)
 {
 	memset(st, 0, sizeof (struct stat));
-	st->st_mode = mst->type == S_IFDIR ? 0755 | S_IFDIR
-	                                   : 0644 | S_IFREG;
+	switch (mst->type) {
+	case S_IFDIR: st->st_mode = 0755 | S_IFDIR; break;
+	case S_IFREG: st->st_mode = 0644 | S_IFREG; break;
+	case S_IFLNK: st->st_mode = 0777 | S_IFLNK; break;
+	default:
+		LOG("[expand_ministat: unknown type: %d]\n", mst->type);
+		st->st_mode = 0;
+	}
 	st->st_nlink = 1;
 	st->st_size  = mst->size;
 	st->st_atime = mst->mtime;
