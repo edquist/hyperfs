@@ -30,7 +30,7 @@ static struct ministat *statbuf_end;
 void init_cache()
 {
 	int ret = hcreate_r(MAX_PATH_NODES, &statcache);
-	if (ret) {
+	if (!ret) {
 		perror("hcreate_r");
 		exit(1);
 	}
