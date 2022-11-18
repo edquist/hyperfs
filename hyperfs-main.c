@@ -1,3 +1,5 @@
+#define  _GNU_SOURCE  // asprintf
+
 #include <fuse.h>   // fuse_main
 
 #include <stdio.h>  // printf, perror
@@ -8,6 +10,7 @@
 #include "hyperfs-cache.h"  // init_cache, free_cache
 #include "hyperfs-state.h"  // struct hyperfs_state
 #include "logger.h"         // init_logger
+#include "xasprintf.h"      // xasprintf
 
 static
 void usage(const char *prog)
@@ -37,21 +40,6 @@ void shift_n_push(int i, int argc, /*const*/ char **argv, /*const*/ char *item)
 	argv[argc - 1] = item;
 }
 
-static
-char *get_fsname_opt(const char *url)
-{
-	static const char *opt = "-ofsname=";
-	size_t len = strlen(opt) + strlen(url);
-	char *buf = malloc(len + 1);
-	if (!buf) {
-		perror("malloc");
-		exit(1);
-	}
-	strcpy(buf, opt);
-	strcpy(buf + strlen(opt), url);
-	return buf;
-}
-
 
 int main(int argc, char **argv, char **envp)
 {
@@ -67,7 +55,7 @@ int main(int argc, char **argv, char **envp)
 	parse_url(url, &state);
 
 	// shift url off front of argv[1:], push fsname_opt onto the end
-	char *fsname_opt = get_fsname_opt(url);
+	char *fsname_opt = xasprintf("-ofsname=%s", url);
 	shift_n_push(1, argc, argv, fsname_opt);
 
 	init_logger();
