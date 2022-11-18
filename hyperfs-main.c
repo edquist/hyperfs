@@ -75,6 +75,8 @@ int main(int argc, char **argv, char **envp)
 	init_cache();
 	res = fuse_main(argc, argv, &hyperfs_ops, &state);
 
+	LOG("[hyperfs: Good-bye!]\n");
+
 	// cleanup as necessary
 	free(fsname_opt);
 	free_cache();
