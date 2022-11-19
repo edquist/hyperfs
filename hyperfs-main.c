@@ -5,8 +5,6 @@
 #include <stdio.h>  // printf, perror
 #include <stdlib.h> // exit
 #include <string.h> // strlen, strcpy, strstr
-
-#include <sys/types.h> // regex types?
 #include <regex.h>  // regcomp, regexec, regfree
 
 #include "hyperfs-ops.h"    // hyperfs_ops
