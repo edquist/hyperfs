@@ -6,5 +6,6 @@ LIB.SRCS      = connor.c getrange.c cheddar.c \
 SRCS.getrange = getrange-main.c $(LIB.SRCS)
 
 SRCS.hyperfs  = hyperfs-main.c hyperfs-cache.c hyperfs-ops.c $(LIB.SRCS) \
-                hyperfs-ops-getattr.c hyperfs-ops-open.c hyperfs-ops-read.c
+                hyperfs-ops-getattr.c hyperfs-ops-open.c hyperfs-ops-read.c \
+                hyperfs-ops-readlink.c
 
