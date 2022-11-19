@@ -14,12 +14,11 @@
 
 static
 int get_head_info(
-	const  char          *host,
-	const  char          *port,
-	const  char          *path,
-	struct resp_info     *resp)
+	const  struct hyperfs_state *remote,
+	const  char                 *path,
+	struct resp_info            *resp)
 {
-	int sock = tcp_connect(host, port);
+	int sock = tcp_connect(remote->host, remote->port);
 	FILE *sockf = fdopen(sock, "r+");
 	LOG("[get_http_path_info: sock is on %d]\n", sock);
 
@@ -29,10 +28,10 @@ int get_head_info(
 	}
 
 	fprintf(sockf,
-		"HEAD %s HTTP/1.1\r\n"
+		"HEAD %s%s HTTP/1.1\r\n"
 		"Host: %s:%s\r\n"        // XXX: service needs to be numeric
 		"Connection: close\r\n"
-		"\r\n", path, host, port);
+		"\r\n", remote->rootpath, path, remote->host, remote->port);
 	fflush(sockf);  // XXX: check
 
 	int ret = get_resp_info(sockf, resp);
@@ -58,13 +57,16 @@ const char *skip_host(const char *location, const struct hyperfs_state *remote)
 
 
 static
-int location_path_adds_slash(const char *path, const char *location)
+int location_path_adds_slash(
+	const char *rootpath, const char *path, const char *location)
 {
+	size_t rlen = strlen(rootpath);
 	size_t plen = strlen(path);
 	size_t llen = strlen(location);
-	return llen == plen + 1
-	    && memcmp(path, location, plen) == 0
-	    && location[plen] == '/';
+	return llen == rlen + plen + 1
+	    && memcmp(rootpath, location, rlen) == 0
+	    && memcmp(path, location + rlen, plen) == 0
+	    && location[rlen + plen] == '/';
 }
 
 
@@ -79,7 +81,7 @@ int location_adds_slash(
 		if (!location)
 			return 0;
 	}
-	return location_path_adds_slash(path, location);
+	return location_path_adds_slash(remote->rootpath, path, location);
 }
 
 
@@ -102,7 +104,7 @@ int get_http_path_info(
 
 	struct resp_info resp;
 
-	int ret = get_head_info(remote->host, remote->port, path, &resp);
+	int ret = get_head_info(remote, path, &resp);
 
 	if (ret < 0) {
 		LOG("[get_http_path_info: get_resp_info returned %d]\n", ret);
