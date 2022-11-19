@@ -16,11 +16,18 @@ char *pfxcasematch(const char *pfx, const char *s)
 }
 
 static
+size_t chomp_crlf(char *line)
+{
+	size_t len = strlen(line);
+	if (len >= 2 && line[len - 1] == '\n' && line[len - 2] == '\r')
+		line[len -= 2] = '\0';
+	return len;
+}
+
+static
 size_t hdrvalcpy(char *dest, const char *src, size_t dstsize)
 {
 	size_t len = strlen(src);
-	if (len >= 2 && src[len - 1] == '\n' && src[len - 2] == '\r')
-		len -= 2;
 	if (len >= dstsize)
 		len = dstsize - 1;
 	memcpy(dest, src, len);
@@ -35,12 +42,14 @@ int get_resp_info(FILE *in, struct resp_info *info)
 	info->last_modified = 0;
 	info->location[0] = 0;
 	if (!fgets(buf, sizeof buf, in))              return -1;
-	LOG("< %s", buf);
+	chomp_crlf(buf);
+	LOG("< %s\n", buf);
 	if (sscanf(buf, "%*s %d ", &info->code) != 1) return -2;
 	while (fgets(buf, sizeof buf, in)) {
-		if (buf[0] == '\r')
+		chomp_crlf(buf);
+		LOG("< %s\n", buf);
+		if (buf[0] == '\0')
 			return 0;
-		LOG("< %s", buf);
 		if ((p = pfxcasematch("Content-Length: ", buf))) {
 			info->content_length = atoi(p);
 		} else if ((p = pfxcasematch("Last-Modified: ", buf))) {
