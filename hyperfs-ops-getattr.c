@@ -39,6 +39,12 @@ int get_head_info(
 	return ret;
 }
 
+static
+char *pfxmatch(const char *pfx, const char *s)
+{
+	size_t len = strlen(pfx);
+	return strncmp(pfx, s, strlen(pfx)) == 0 ? (char *) s + len : NULL;
+}
 
 static
 const char *skip_host(const char *location, const struct hyperfs_state *remote)

@@ -9,12 +9,6 @@
 #include "cheddar.h"
 #include "logger.h"
 
-char *pfxmatch(const char *pfx, const char *s)
-{
-	size_t len = strlen(pfx);
-	return strncmp(pfx, s, strlen(pfx)) == 0 ? (char *) s + len : NULL;
-}
-
 char *pfxcasematch(const char *pfx, const char *s)
 {
 	size_t len = strlen(pfx);
