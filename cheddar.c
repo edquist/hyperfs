@@ -12,6 +12,12 @@
 char *pfxmatch(const char *pfx, const char *s)
 {
 	size_t len = strlen(pfx);
+	return strncmp(pfx, s, strlen(pfx)) == 0 ? (char *) s + len : NULL;
+}
+
+char *pfxcasematch(const char *pfx, const char *s)
+{
+	size_t len = strlen(pfx);
 	return strncasecmp(pfx, s, strlen(pfx)) == 0 ? (char *) s + len : NULL;
 }
 
@@ -41,11 +47,11 @@ int get_resp_info(FILE *in, struct resp_info *info)
 		if (buf[0] == '\r')
 			return 0;
 		LOG("< %s", buf);
-		if ((p = pfxmatch("Content-Length: ", buf))) {
+		if ((p = pfxcasematch("Content-Length: ", buf))) {
 			info->content_length = atoi(p);
-		} else if ((p = pfxmatch("Last-Modified: ", buf))) {
+		} else if ((p = pfxcasematch("Last-Modified: ", buf))) {
 			info->last_modified = date_parse(p);
-		} else if ((p = pfxmatch("Location: ", buf))) {
+		} else if ((p = pfxcasematch("Location: ", buf))) {
 			hdrvalcpy(info->location, p, sizeof info->location);
 		}
 	}

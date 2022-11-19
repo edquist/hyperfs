@@ -12,6 +12,7 @@ struct resp_info {
 };
 
 char *pfxmatch(const char *pfx, const char *s);
+char *pfxcasematch(const char *pfx, const char *s);
 int get_resp_data(FILE *in, char *dest, size_t *len);
 int get_resp_info(FILE *in, struct resp_info *info);
 
