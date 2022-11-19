@@ -57,16 +57,20 @@ void free_cache()
 	free(statbuf);
 }
 
-int get_cached_path_info(const char *path, struct ministat *st)
+const struct ministat *get_cached_path_info_p(const char *path)
 {
 	ENTRY e = { (char *) path };  // not modified or stored for lookup
 	ENTRY *found = NULL;
 	int ret = hsearch_r(e, FIND, &found, &statcache);
-	if (ret) {
-		struct ministat *msval = found->data;
+	return ret ? found->data : NULL;
+}
+
+int get_cached_path_info(const char *path, struct ministat *st)
+{
+	const struct ministat *msval = get_cached_path_info_p(path);
+	if (msval)
 		*st = *msval;
-	}
-	return ret ? 0 : -1;
+	return msval ? 0 : -1;
 }
 
 char *get_pathbuf(size_t size)
