@@ -2,6 +2,7 @@
 #include <fcntl.h>            // O_WRONLY, O_RDWR
 #include <errno.h>            // EROFS
 
+#include "hyperfs-finfo.h"    // union hyperfs_finfo
 #include "hyperfs-cache.h"    // get_cached_path_info_p
 #include "logger.h"           // LOG
 
@@ -13,14 +14,6 @@ int hyperfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 	return -EROFS;
 }
 
-
-struct ministat;
-
-union fhx {
-	uint64_t fh;
-	const struct ministat *ms;
-};
-
 int hyperfs_open(const char *path, struct fuse_file_info *fi)
 {
 	LOG("[open: '%s']\n", path);
@@ -28,7 +21,7 @@ int hyperfs_open(const char *path, struct fuse_file_info *fi)
 	if (fi->flags & (O_WRONLY|O_RDWR))
 		return -EROFS;
 
-	union fhx finfo;
+	union hyperfs_finfo finfo;
 	finfo.ms = get_cached_path_info_p(path);
 	fi->fh = finfo.fh;
 	return 0;
