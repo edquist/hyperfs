@@ -38,10 +38,8 @@ int get_resp_info(FILE *in, struct resp_info *info)
 	LOG("< %s", buf);
 	if (sscanf(buf, "%*s %d ", &info->code) != 1) return -2;
 	while (fgets(buf, sizeof buf, in)) {
-		if (buf[0] == '\r') {
-			return info->content_length >= 0 ? 0 :
-			       info->location[0]         ? 0 : -3;
-		}
+		if (buf[0] == '\r')
+			return 0;
 		LOG("< %s", buf);
 		if ((p = pfxmatch("Content-Length: ", buf))) {
 			info->content_length = atoi(p);

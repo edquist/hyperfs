@@ -83,7 +83,9 @@ int location_adds_slash(
 }
 
 
-static
+static inline
+uint64_t nonneg(off_t n) { return n < 0 ? 0 : n; }
+
 int get_http_path_info(
 	const  char     *path,
 	struct ministat *info)
@@ -122,7 +124,7 @@ int get_http_path_info(
 			info->type  = S_IFLNK;
 		}
 	} else if (resp.code >= 200 || resp.code <= 299) {
-		info->size  = resp.content_length;
+		info->size  = nonneg(resp.content_length);
 		info->mtime = resp.last_modified;
 		info->type  = S_IFREG;
 	} else if (resp.code == 404) {
