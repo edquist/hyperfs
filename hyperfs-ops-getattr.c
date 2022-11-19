@@ -108,6 +108,7 @@ int get_http_path_info(
 		LOG("[get_http_path_info: get_resp_info returned %d]\n", ret);
 		return -EIO;  // XXX: stat(1) does not set EIO
 	}
+	LOG("[get_http_path_info: response code was %d]\n", resp.code);
 	if (resp.code == 301 || resp.code == 302) {
 		// Moved Permanently, or Found; follow Location header
 		LOG("[get_http_path_info: Location: %s]\n", resp.location);
