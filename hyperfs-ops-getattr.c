@@ -57,17 +57,6 @@ const char *skip_host(const char *location, const struct hyperfs_state *remote)
 
 
 static
-int location_path_adds_slash(const char *path, const char *location)
-{
-	size_t plen = strlen(path);
-	size_t llen = strlen(location);
-	return llen == plen + 1
-	    && memcmp(path, location, plen) == 0
-	    && location[plen] == '/';
-}
-
-
-static
 int location_adds_slash(
 	const char *path,
 	const char *location,
@@ -78,9 +67,9 @@ int location_adds_slash(
 		if (!location)
 			return 0;
 	}
-	if (!(location = pfxmatch(remote->rootpath, location)))
-		return 0;
-	return location_path_adds_slash(path, location);
+	return (location = pfxmatch(remote->rootpath, location))
+	    && (location = pfxmatch(path, location))
+	    && strcmp(location, "/") == 0;
 }
 
 
