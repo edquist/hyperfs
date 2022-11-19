@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>    // uint64_t
+#include <time.h>      // time_t   ... oof.
 
 
 struct ministat {
