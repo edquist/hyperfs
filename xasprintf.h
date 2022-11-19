@@ -6,7 +6,8 @@
 
 #include <stdio.h>    // asprintf
 
-#define FAIL(...) do { fprintf(stderr, __VA_ARGS__); exit(1); } while (0)
+#include "fail.h"     // FAIL
+
 
 // do this as a macro to ease passing __VA_ARGS__
 
