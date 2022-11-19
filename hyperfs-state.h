@@ -1,7 +1,7 @@
 #pragma once
 
+// #include <stdio.h>  // FILE  ... sorry.
 #include <fuse.h>      // fuse_get_context
-
 
 struct hyperfs_state {
 
@@ -10,8 +10,11 @@ struct hyperfs_state {
 	char *port;      // numeric or service name
 	char *rootpath;  // does not include trailing slash
 	int   port_num;
-	int   sockfd;
-	FILE *sockf;
+
+	// TODO: leave keep-alive connection here
+	//int   sockfd;
+	//FILE *sockf;
+
 	// cache could go here too, but we leave it to hyperfs-cache
 };
 
