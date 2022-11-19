@@ -124,7 +124,7 @@ int get_http_path_info(
 			info->link  = addpath(resp.location);
 			info->type  = S_IFLNK;
 		}
-	} else if (resp.code >= 200 && resp.code <= 299) {
+	} else if (200 <= resp.code && resp.code <= 299) {
 		info->size  = nonneg(resp.content_length);
 		info->mtime = resp.last_modified;
 		info->type  = S_IFREG;
