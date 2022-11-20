@@ -5,7 +5,10 @@
 
 
 struct ministat {
-	uint64_t size;
+	union {
+		uint64_t size;
+		char *hyperdir;  // dir listing for type == S_IFDIR
+	};
 	union {
 		time_t  mtime;
 		char   *link;   // link target for type == S_IFLNK
