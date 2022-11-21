@@ -26,7 +26,7 @@ int needs_escape(unsigned char c)
 }
 
 // return total length needed if any chars need escape, otherwise 0
-int string_needs_escape(const char *s)
+int path_needs_escape(const char *s)
 {
 	const char *p = s;
 	int ecount = 0;
@@ -68,6 +68,11 @@ static
 unsigned char hexdecode(const char *hex)
 {
 	return (hexdecode_nib(hex[0]) << 8) | hexdecode_nib(hex[1]);
+}
+
+int path_is_escaped(const char *s)
+{
+	return strchr(s, '%') || strchr(s, '&');
 }
 
 char *decode_escaped(char *dest, const char *s)
