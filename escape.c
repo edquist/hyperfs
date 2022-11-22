@@ -33,7 +33,7 @@ int path_needs_escape(const char *s)
 	while (*p)
 		if (needs_escape(*p++))
 			ecount++;
-	return ecount ? p - s + ecount : 0;
+	return ecount ? p - s + 2 * ecount : 0;
 }
 
 static
