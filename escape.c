@@ -42,6 +42,7 @@ char hexnib(int n)
 	return n < 10 ? '0' + n : ('a' - 10) + n;
 }
 
+// it is NOT OK to encode in-place (dest == raw)
 char *escape_raw(char *dest, const char *raw)
 {
 	const unsigned char *u = (const unsigned char *) raw;
@@ -75,6 +76,7 @@ int path_is_escaped(const char *s)
 	return strchr(s, '%') || strchr(s, '&');
 }
 
+// it is OK to decode in-place (dest == s)
 char *decode_escaped(char *dest, const char *s)
 {
 	while (*s) {
