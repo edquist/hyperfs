@@ -90,6 +90,18 @@ char *add_pathbuf(const char *buf, size_t size)
 	return dest;
 }
 
+// like add_pathbuf, but tack on a NUL terminator, too
+char *add_pathlen(const char *buf, size_t len)
+{
+	size_t size = len + 1;
+	char *dest = get_pathbuf(size);
+	if (dest) {
+		memcpy(dest, buf, len);
+		dest[len] = '\0';
+	}
+	return dest;
+}
+
 char *addpath(const char *path)
 {
 	size_t size = strlen(path) + 1;  // include NUL terminator
