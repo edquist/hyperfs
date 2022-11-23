@@ -57,7 +57,7 @@ void free_cache()
 	free(statbuf);
 }
 
-const struct ministat *get_cached_path_info_p(const char *path)
+struct ministat *get_cached_path_info_p(const char *path)
 {
 	ENTRY e = { (char *) path };  // not modified or stored for lookup
 	ENTRY *found = NULL;

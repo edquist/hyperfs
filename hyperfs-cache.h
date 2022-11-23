@@ -7,7 +7,7 @@ struct stat;
 
 void init_cache();
 void free_cache();
-const struct ministat *get_cached_path_info_p(const char *path);
+struct ministat *get_cached_path_info_p(const char *path);
 int get_cached_path_info(const char *path, struct ministat *st);
 int set_cached_path_info(const char *path, const struct ministat *st);
 void expand_ministat(const struct ministat *mst, struct stat *st);
