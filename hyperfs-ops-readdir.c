@@ -58,9 +58,6 @@ char *maybe_take_path(char *linebuf, regmatch_t href)
 		s += 2;  // apache does this if file has a ':'
 
 	if (link_check(s, e)) {
-		if (s[0] == '.') return 0;  // ignore dotfiles
-		if (s[0] == '/') return 0;  // ignore link to root "/"
-
 		if (e[-1] == '/') {
 			*--e = '\0';
 			*--s = '/';  // OK, overwrite opening '"'
