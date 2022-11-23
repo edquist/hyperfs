@@ -113,7 +113,8 @@ void mark_dir(const char *path, const char *name)
 		return;
 	}
 	char *p = buf;
-	p = stpcpy(p, path);
+	if (!streq(path, "/"))
+		p = stpcpy(p, path);
 	p = stpcpy(p, name);
 
 	if (!get_cached_path_info_p(buf)) {
