@@ -118,7 +118,7 @@ void mark_dir(const char *rootpath, const char *path, const char *name)
 		// add it if we don't already have it
 		struct ministat st = {.type = S_IFDIR};
 		int ret = set_cached_path_info(buf, &st);
-		if (!ret) {
+		if (ret < 0) {
 			LOG("[mark_dir: set_cached_path_info failed]\n");
 			perror("hsearch_r");
 		}
