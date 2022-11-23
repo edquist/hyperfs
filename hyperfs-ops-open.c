@@ -4,7 +4,7 @@
 
 #include "hyperfs-finfo.h"    // union hyperfs_finfo
 #include "hyperfs-cache.h"    // get_cached_path_info_p
-#include "logger.h"           // LOG
+#include "loggo.h"            // LOG
 
 
 int hyperfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)

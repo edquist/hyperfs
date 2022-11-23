@@ -1,7 +1,7 @@
 # SRCS.program = prog.cpp progsrc2.cpp progsrc3.cpp ...
 
 LIB.SRCS      = connor.c getrange.c cheddar.c escape.c \
-                ymdhms.c month_idx.c date_parse.c drainf.c logger.c
+                ymdhms.c month_idx.c date_parse.c drainf.c loggo.c
 
 SRCS.getrange = getrange-main.c $(LIB.SRCS)
 

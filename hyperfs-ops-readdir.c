@@ -3,7 +3,7 @@
 #include <errno.h>          // EIO
 #include <string.h>         // memchr
 
-#include "logger.h"         // LOG
+#include "loggo.h"          // LOG
 #include "hyperfs-state.h"  // struct hyperfs_state, get_hyperfs_state
 #include "hyperfs-cache.h"  // add_pathbuf
 #include "escape.h"         // path_is_escaped

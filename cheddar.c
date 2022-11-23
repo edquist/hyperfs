@@ -7,7 +7,7 @@
 #include "date_parse.h"
 #include "drainf.h"
 #include "cheddar.h"
-#include "logger.h"
+#include "loggo.h"
 
 char *pfxcasematch(const char *pfx, const char *s)
 {

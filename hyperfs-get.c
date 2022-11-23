@@ -4,7 +4,7 @@
 #include "hyperfs-state.h"  // struct hyperfs_state
 #include "connor.h"         // tcp_connect
 #include "cheddar.h"        // struct resp_info
-#include "logger.h"         // LOG
+#include "loggo.h"          // LOG
 
 
 FILE *hyperget(

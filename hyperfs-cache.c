@@ -7,7 +7,7 @@
 #include <sys/stat.h>  // struct stat
 
 #include "ministat.h"  // struct ministat
-#include "logger.h"    // LOG
+#include "loggo.h"     // LOG
 
 #define MAX_PATH_NODES (1024 * 1024)
 #define PATHNAME_BUFSZ (64 * 1024 * 1024)

@@ -2,7 +2,7 @@
 
 #include "hyperfs-cache.h"  // get_cached_path_info_p
 #include "ministat.h"       // struct ministat
-#include "logger.h"         // LOG
+#include "loggo.h"          // LOG
 
 int hyperfs_readlink(const char *path, char *buf, size_t size)
 {

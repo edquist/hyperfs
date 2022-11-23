@@ -10,7 +10,7 @@
 #include "hyperfs-ops.h"    // hyperfs_ops
 #include "hyperfs-cache.h"  // init_cache, free_cache
 #include "hyperfs-state.h"  // struct hyperfs_state
-#include "logger.h"         // init_logger, LOG
+#include "loggo.h"          // init_logger, LOG
 #include "xasprintf.h"      // xasprintf
 
 static

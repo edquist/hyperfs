@@ -9,7 +9,7 @@
 #include "ministat.h"       // get_cached_path_info, set_cached_path_info
 #include "cheddar.h"        // struct resp_info, get_resp_info
 #include "connor.h"         // tcp_connect
-#include "logger.h"         // LOG
+#include "loggo.h"          // LOG
 
 
 static

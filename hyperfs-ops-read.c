@@ -3,7 +3,7 @@
 #include "hyperfs-finfo.h"  // union hyperfs_finfo
 #include "hyperfs-state.h"  // struct hyperfs_state, get_hyperfs_state
 #include "getrange.h"       // getrange
-#include "logger.h"         // LOG
+#include "loggo.h"          // LOG
 #include "ministat.h"       // hyperfs_state's struct ministat ... Hmm.
 
 static inline
