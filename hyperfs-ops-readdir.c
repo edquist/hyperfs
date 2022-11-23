@@ -195,6 +195,12 @@ int hyperfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 	char *name = ms->hyperdir;
 	struct stat st;
 	memset(&st, 0, sizeof st);
+
+	st.st_mode = S_IFDIR;
+	if (filler(buf, ".",  &st, 0) ||
+	    filler(buf, "..", &st, 0))
+		return -1; // ???
+
 	while (*name) {
 		st.st_mode = name[0] == '/' ? S_IFDIR : S_IFREG;
 		if (name[0] == '/')
