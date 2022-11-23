@@ -30,11 +30,11 @@ FILE *hyperget(
 	}
 
 	fprintf(sockf,  // XXX: check
-		"GET %s%s HTTP/1.1\r\n"
+		"GET %s/%s/ HTTP/1.1\r\n"
 		"Host: %s\r\n"  // skip port
 		// "Accept: */*\r\n"
 		// "User-Agent: hyperfs\r\n"
-		"\r\n", remote->rootpath, path, remote->host);
+		"\r\n", remote->rootpath, path + 1, remote->host);
 
 	fflush(sockf);  // XXX: check
 
