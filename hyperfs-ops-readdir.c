@@ -67,7 +67,7 @@ char *maybe_take_path(char *linebuf, regmatch_t href)
 		}
 		if (path_is_escaped(s))
 			e = decode_escaped(s, s);  // in-place
-		char *p = add_pathbuf(s, e - s);
+		char *p = add_pathbuf(s, e - s + 1);
 		if (!p) {
 			LOG("[maybe_take_path: add_pathbuf alloc failure]\n");
 			return NULL;
