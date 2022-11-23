@@ -80,12 +80,18 @@ static
 regmatch_t get_href(const char *line)
 {
 	const static regmatch_t nope = {-1, -1};
+	static regex_t reg;
+	static int reg_compiled = 0;
+
 	regmatch_t m[2];
-	regex_t reg;
 	const char *re = "<a [^>]*href=\"([^\"]+)\"";
-	if (regcomp(&reg, re, REG_EXTENDED)) {
-		LOG("[get_href: regcomp fail]\n");
-		return nope;
+	if (!reg_compiled) {
+		LOG("[get_href: doing one-time reg compile]\n");
+		if (regcomp(&reg, re, REG_EXTENDED)) {
+			LOG("[get_href: regcomp fail]\n");
+			return nope;
+		}
+		reg_compiled = 1;
 	}
 	if (regexec(&reg, line, 2, m, 0))
 		return nope;
