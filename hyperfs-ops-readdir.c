@@ -100,20 +100,19 @@ regmatch_t get_href(const char *line)
 }
 
 static
-void mark_dir(const char *rootpath, const char *path, const char *name)
+void mark_dir(const char *path, const char *name)
 {
 	char buf[4096];
 	if (name[0] != '/')
 		return;
 
-	if (strlen(rootpath) + strlen(path) + strlen(name) >= sizeof buf) {
+	if (strlen(path) + strlen(name) >= sizeof buf) {
 		LOG("[mark_dir: oversized path; not marking]\n"
 		    "[mark_dir: path = [%s] ]\n"
 		    "[mark_dir: name = [%s] ]\n", path, name);
 		return;
 	}
 	char *p = buf;
-	p = stpcpy(p, rootpath);
 	p = stpcpy(p, path);
 	p = stpcpy(p, name);
 
@@ -177,7 +176,7 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 	char *name = pstart;
 	while (*name) {
 		if (name[0] == '/')
-			mark_dir(remote->rootpath, path, name);
+			mark_dir(path, name);
 		name += strlen(name) + 1;
 	}
 
