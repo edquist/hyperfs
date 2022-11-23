@@ -46,7 +46,7 @@ FILE *hyperget(
 		return NULL;
 	}
 
-	LOG("[hyperget: got code %d]", resp.code);
+	LOG("[hyperget: got code %d]\n", resp.code);
 	if (resp.code < 200 || 299 < resp.code) {
 		fclose(sockf);
 		return NULL;
