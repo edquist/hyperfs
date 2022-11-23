@@ -189,8 +189,10 @@ int hyperfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 	}
 	if (!ms->hyperdir) {
 		ms->hyperdir = cache_hyperdents(remote, path);
-		if (!ms->hyperdir)
+		if (!ms->hyperdir) {
+			LOG("[readdir: returning EIO]\n");
 			return -EIO;  // or maybe EACCESS depending on error
+		}
 	}
 
 	char *name = ms->hyperdir;
@@ -201,6 +203,7 @@ int hyperfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 		if (name[0] == '/')
 			name++;
 
+		LOG("[readdir: sending '%s']\n", name);
 		if (filler(buf, name, &st, 0))
 			break;
 		name += strlen(name) + 1;
