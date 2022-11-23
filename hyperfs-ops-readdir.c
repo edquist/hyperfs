@@ -149,7 +149,6 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 			char *name = maybe_take_path(linebuf, href);
 			if (name) {
 				n++;
-				mark_dir(remote->rootpath, path, name);
 			}
 		}
 		if (line_len && linebuf[line_len - 1] == '\n') {
@@ -174,6 +173,14 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 	LOG("[cache_hyperdents: read and cached %d dir entries]\n", n);
 	addpath("");
 	fclose(sockf);
+
+	char *name = pstart;
+	while (*name) {
+		if (name[0] == '/')
+			mark_dir(remote->rootpath, path, name);
+		name += strlen(name) + 1;
+	}
+
 	return pstart;
 }
 
