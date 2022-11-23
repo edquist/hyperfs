@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stddef.h>     // size_t
+#include <sys/types.h>  // off_t
+
+
 struct fuse_file_info;
 
 int hyperfs_read(const char *path, char *buf, size_t size,
