@@ -1,5 +1,5 @@
 #include <stdio.h>     // FILE
-#include <errno.h>     // errno
+#include <errno.h>     // errno, EREMOTEIO
 #include <time.h>      // time_t
 #include <sys/stat.h>  // S_IFREG, S_IFDIR, S_IFLNK
 #include <string.h>    // strerror, strstr
@@ -128,7 +128,7 @@ int get_http_path_info(
 		return -ENOENT;
 	} else {
 		LOG("[get_http_path_info: got %d for: %s]\n", resp.code, path);
-		return -EIO;  // XXX: stat(1) does not set EIO
+		return -EREMOTEIO;  // XXX: stat(1) does not set this code
 	}
 
 	return 0;
