@@ -1,4 +1,5 @@
 #include <stdio.h>     // FILE
+#include <stdlib.h>    // malloc, free :(
 #include <errno.h>     // errno, EREMOTEIO
 #include <time.h>      // time_t
 #include <sys/stat.h>  // S_IFREG, S_IFDIR, S_IFLNK
@@ -10,6 +11,46 @@
 #include "cheddar.h"        // struct resp_info, get_resp_info
 #include "connor.h"         // tcp_connect
 #include "loggo.h"          // LOG
+#include "sendo.h"          // SENDO, S_ENDO
+#include "escape.h"         // escape_raw, path_needs_escape
+
+static
+void send_head_plain(
+	FILE                       *sockf,
+	const struct hyperfs_state *remote,
+	const char                 *path)
+{
+	SENDO(sockf, "HEAD %s%s HTTP/1.1", remote->rootpath, path);
+	SENDO(sockf, "Host: %s", remote->host);  // skip port
+	SENDO(sockf, "Connection: close");
+	SENDO(sockf, "");
+
+	if (fflush(sockf)) {
+		LOG("[send_get_plain: fflush failed; is connection closed?]\n");
+		perror("fflush");
+	}
+}
+
+
+static
+void send_head_escaped(
+	FILE                       *sockf,
+	const struct hyperfs_state *remote,
+	const char                 *path,
+	int                         n)
+{
+	char buf[4096];  // try to avoid allocations for the most part
+	char *p = n < sizeof buf ? buf : malloc(n + 1);
+
+	LOG("[send_head_escaped: escaping path to size %d]\n", n);
+
+	escape_raw(p, path);
+	send_head_plain(sockf, remote, p);
+
+	if (p != buf)
+		free(p);
+}
+
 
 
 static
@@ -27,12 +68,12 @@ int get_head_info(
 		return -1;
 	}
 
-	fprintf(sockf,
-		"HEAD %s%s HTTP/1.1\r\n"
-		"Host: %s:%s\r\n"        // XXX: service needs to be numeric
-		"Connection: close\r\n"
-		"\r\n", remote->rootpath, path, remote->host, remote->port);
-	fflush(sockf);  // XXX: check
+	int n = path_needs_escape(path);
+	if (n) {
+		send_head_escaped(sockf, remote, path, n);
+	} else {
+		send_head_plain(sockf, remote, path);
+	}
 
 	int ret = get_resp_info(sockf, resp);
 	fclose(sockf);  // TODO: leave open
