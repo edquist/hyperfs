@@ -23,7 +23,7 @@ void send_get_plain(
 	SENDO(sockf, "Host: %s", remote->host);  // skip port
 	// SENDO(sockf, "Accept: */*");
 	// SENDO(sockf, "User-Agent: hyperfs");
-	S_ENDO(sockf);
+	SENDO(sockf, "");
 
 	if (fflush(sockf)) {
 		LOG("[send_get_plain: fflush failed; is connection closed?]\n");
