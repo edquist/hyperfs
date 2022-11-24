@@ -40,6 +40,8 @@ FILE *getrange(
 	int ret = get_resp_data(sockf, buf, len);
 	if (ret < 0) {
 		fprintf(stderr, "get_resp_data returned %d\n", ret);
+
+		// XXX: ok don't die here.....
 		exit(1);
 	}
 
