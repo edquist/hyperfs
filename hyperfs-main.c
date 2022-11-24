@@ -96,6 +96,10 @@ char **copy_args(char **dest, char *const *src)
 
 int main(int argc, char **argv, char **envp)
 {
+	init_logger();
+	LOG("[hyperfs: Greets!]\n");
+	init_cache();
+
 	int res;
 	struct hyperfs_state state = {};
 
@@ -117,10 +121,7 @@ int main(int argc, char **argv, char **envp)
 	*fuse_argp   = NULL;
 	int fuse_argc = fuse_argp - fuse_args;
 
-	init_logger();
-	LOG("[hyperfs: Greets!]\n");
 	LOG("[hyperfs: mounting <%s> onto '%s']\n", url, mountpoint);
-	init_cache();
 	res = fuse_main(fuse_argc, fuse_args, &hyperfs_ops, &state);
 
 	LOG("[hyperfs: Good-bye!]\n");
