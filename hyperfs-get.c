@@ -15,12 +15,15 @@ void send_get_plain(
 	struct hyperfs_state *remote,
 	const char           *path)
 {
+	if (path[0] == '/' && path[1] == '\0')
+		path++;  // avoid double-slash for fs root
+
 	fprintf(sockf,
-		"GET %s/%s/ HTTP/1.1\r\n"
+		"GET %s%s/ HTTP/1.1\r\n"
 		"Host: %s\r\n"  // skip port
 		// "Accept: */*\r\n"
 		// "User-Agent: hyperfs\r\n"
-		"\r\n", remote->rootpath, path + 1, remote->host);
+		"\r\n", remote->rootpath, path, remote->host);
 
 	if (fflush(sockf)) {
 		LOG("[send_get_plain: fflush failed; is connection closed?]\n");
