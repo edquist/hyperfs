@@ -29,7 +29,7 @@ FILE *getrange(
 		"GET %s HTTP/1.1\r\n"
 		"Host: %s:%s\r\n"  // XXX: service needs to be numeric
 		// "Accept: */*\r\n"
-		// "User-Agent: hyperfs\r\n"
+		"User-Agent: hyperfs\r\n"
 		"Range: bytes=%zu-%zu\r\n"
 		"\r\n", path, host, port, start, end);
 
