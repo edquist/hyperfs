@@ -89,7 +89,7 @@ char *parse_url(const char *url, struct hyperfs_state *state)
 static
 char **copy_args(char **dest, char *const *src)
 {
-	for (; *src; src++)
+	while (*src)
 		*dest++ = *src++;
 	return dest;
 }
