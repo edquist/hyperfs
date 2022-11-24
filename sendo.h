@@ -4,7 +4,7 @@
 
 
 #define SENDO(_sock, ...) \
-	do { LOG("< "); LOG(__VA_ARGS__); LOG("\n"); \
+	do { LOG("> "); LOG(__VA_ARGS__); LOG("\n"); \
 	     fprintf(_sock, __VA_ARGS__); fprintf(_sock, "\r\n"); } while (0)
 
 
