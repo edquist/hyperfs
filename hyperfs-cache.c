@@ -18,9 +18,14 @@
 //       storage space for the hash table entries (key & data)
 
 static struct hsearch_data statcache;
+
 static char  *pathbuf;
 static char  *pathbuf_next;
 static char  *pathbuf_end;
+
+static char **ptrbuf;
+static char **ptrbuf_next;
+static char **ptrbuf_end;
 
 static struct ministat *statbuf;
 static struct ministat *statbuf_next;
@@ -34,14 +39,23 @@ void init_cache()
 		perror("hcreate_r");
 		exit(1);
 	}
-	pathbuf = malloc(PATHNAME_BUFSZ);
+	pathbuf = malloc(PATHNAME_BUFSZ * sizeof *pathbuf);
 	pathbuf_next = pathbuf;
 	pathbuf_end  = pathbuf + PATHNAME_BUFSZ;
 	if (!pathbuf) {
 		perror("malloc");
 		exit(1);
 	}
-	statbuf = malloc(MAX_PATH_NODES * sizeof(struct ministat));
+
+	ptrbuf = malloc(MAX_PATH_NODES * sizeof *ptrbuf);
+	ptrbuf_next = ptrbuf;
+	ptrbuf_end  = ptrbuf + MAX_PATH_NODES;
+	if (!ptrbuf) {
+		perror("malloc");
+		exit(1);
+	}
+
+	statbuf = malloc(MAX_PATH_NODES * sizeof *statbuf);
 	statbuf_next = statbuf;
 	statbuf_end  = statbuf + MAX_PATH_NODES;
 	if (!statbuf) {
@@ -54,6 +68,7 @@ void free_cache()
 {
 	hdestroy_r(&statcache);
 	free(pathbuf);
+	free(ptrbuf);
 	free(statbuf);
 }
 
@@ -107,6 +122,25 @@ char *addpath(const char *path)
 	size_t size = strlen(path) + 1;  // include NUL terminator
 	return add_pathbuf(path, size);
 }
+
+char **addptr(char *p)
+{
+	char **ret = ptrbuf_next;
+	if (ptrbuf_next >= ptrbuf_end)
+		return NULL;  // sorry we're full
+	*ptrbuf_next++ = p;
+	return ret;
+}
+
+char **get_ptrbuf(size_t count)
+{
+	char **ret = ptrbuf_next;
+	if (ptrbuf_next + count > ptrbuf_end)
+		return NULL;  // sorry we're full
+	ptrbuf_next += count;
+	return ret;
+}
+
 
 static
 struct ministat *addstat(const struct ministat *st)
