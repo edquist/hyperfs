@@ -19,6 +19,8 @@ int hyperfs_read(const char *path, char *buf, size_t size,
 	size_t fsize = finfo.ms->size;
 	size_t readsize = fsize <= offset ? 0 : min(size, fsize - offset);
 	LOG("[read: fsize=[%zu] readsize=[%zu] ]\n", fsize, readsize);
+	if (readsize == 0)
+		return 0;
 
 	struct hyperfs_state *remote = get_hyperfs_state();
 
