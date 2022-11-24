@@ -1,10 +1,52 @@
 #include <stdio.h>   // fprintf, FILE, perror
+#include <stdlib.h>  // malloc, free  :(
 #include <unistd.h>  // close
 
 #include "hyperfs-state.h"  // struct hyperfs_state
 #include "connor.h"         // tcp_connect
 #include "cheddar.h"        // struct resp_info
+#include "escape.h"         // path_needs_escape, escape_raw
 #include "loggo.h"          // LOG
+
+
+static
+void send_get_plain(
+	FILE                 *sockf,
+	struct hyperfs_state *remote,
+	const char           *path)
+{
+	fprintf(sockf,
+		"GET %s/%s/ HTTP/1.1\r\n"
+		"Host: %s\r\n"  // skip port
+		// "Accept: */*\r\n"
+		// "User-Agent: hyperfs\r\n"
+		"\r\n", remote->rootpath, path + 1, remote->host);
+
+	if (fflush(sockf)) {
+		LOG("[send_get_plain: fflush failed; is connection closed?]\n");
+		perror("fflush");
+	}
+}
+
+
+static
+void send_get_escaped(
+	FILE                 *sockf,
+	struct hyperfs_state *remote,
+	const char           *path,
+	int                   n)
+{
+	char buf[4096];  // try to avoid allocations for the most part
+	char *p = n < sizeof buf ? buf : malloc(n + 1);
+
+	LOG("[send_get_escaped: escaping path to size %d]\n", n);
+
+	escape_raw(p, path);
+	send_get_plain(sockf, remote, p);
+
+	if (p != buf)
+		free(p);
+}
 
 
 FILE *hyperget(
@@ -29,14 +71,12 @@ FILE *hyperget(
 		return NULL;
 	}
 
-	fprintf(sockf,  // XXX: check
-		"GET %s/%s/ HTTP/1.1\r\n"
-		"Host: %s\r\n"  // skip port
-		// "Accept: */*\r\n"
-		// "User-Agent: hyperfs\r\n"
-		"\r\n", remote->rootpath, path + 1, remote->host);
-
-	fflush(sockf);  // XXX: check
+	int n = path_needs_escape(path);
+	if (n) {
+		send_get_escaped(sockf, remote, path, n);
+	} else {
+		send_get_plain(sockf, remote, path);
+	}
 
 	struct resp_info resp;
         int ret = get_resp_info(sockf, &resp);
