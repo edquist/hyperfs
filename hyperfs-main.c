@@ -84,35 +84,44 @@ char *parse_url(const char *url, struct hyperfs_state *state)
 	return url_norm;
 }
 
-static
-void shift_n_push(int i, int argc, /*const*/ char **argv, /*const*/ char *item)
-{
-	for (; i < argc - 1; i++)
-		argv[i] = argv[i + 1];
-	argv[argc - 1] = item;
-}
 
+// src is NULL terminated; we do not NULL terminate dest though
+static
+char **copy_args(char **dest, char *const *src)
+{
+	for (; *src; src++)
+		*dest++ = *src++;
+	return dest;
+}
 
 int main(int argc, char **argv, char **envp)
 {
 	int res;
 	struct hyperfs_state state = {};
 
-	if (argc < 3)
+	if (argc < 3 || 60 < argc)
 		usage(argv[0]);
+
+	char *fuse_args[64], **fuse_argp = fuse_args;
 
 	char *url = parse_url(argv[1], &state);
 	char *mountpoint = argv[2];
-
-	// shift url off front of argv[1:], push fsname_opt onto the end
 	char *fsname_opt = xasprintf("-ofsname=%s", url);
-	shift_n_push(1, argc, argv, fsname_opt);
+
+	*fuse_argp++ = argv[0];
+	// skip argv[1] (URL), which we add later as fsname_opt
+	fuse_argp    = copy_args(fuse_argp, &argv[2]);
+
+	*fuse_argp++ = "-s";        // single-threaded fs, please
+	*fuse_argp++ = fsname_opt;
+	*fuse_argp   = NULL;
+	int fuse_argc = fuse_argp - fuse_args;
 
 	init_logger();
 	LOG("[hyperfs: Greets!]\n");
 	LOG("[hyperfs: mounting <%s> onto '%s']\n", url, mountpoint);
 	init_cache();
-	res = fuse_main(argc, argv, &hyperfs_ops, &state);
+	res = fuse_main(fuse_argc, fuse_args, &hyperfs_ops, &state);
 
 	LOG("[hyperfs: Good-bye!]\n");
 
