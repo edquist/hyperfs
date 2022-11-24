@@ -7,6 +7,7 @@
 #include "cheddar.h"        // struct resp_info
 #include "escape.h"         // path_needs_escape, escape_raw
 #include "loggo.h"          // LOG
+#include "sendo.h"          // SENDO
 
 
 static
@@ -18,12 +19,11 @@ void send_get_plain(
 	if (path[0] == '/' && path[1] == '\0')
 		path++;  // avoid double-slash for fs root
 
-	fprintf(sockf,
-		"GET %s%s/ HTTP/1.1\r\n"
-		"Host: %s\r\n"  // skip port
-		// "Accept: */*\r\n"
-		// "User-Agent: hyperfs\r\n"
-		"\r\n", remote->rootpath, path, remote->host);
+	SENDO(sockf, "GET %s%s/ HTTP/1.1", remote->rootpath, path);
+	SENDO(sockf, "Host: %s", remote->host);  // skip port
+	// SENDO(sockf, "Accept: */*");
+	// SENDO(sockf, "User-Agent: hyperfs");
+	S_ENDO(sockf);
 
 	if (fflush(sockf)) {
 		LOG("[send_get_plain: fflush failed; is connection closed?]\n");
