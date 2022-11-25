@@ -4,6 +4,7 @@
 
 #include "connor.h"  // tcp_connect
 #include "cheddar.h" // get_resp_data
+#include "sendo.h"   // SENDO
 
 FILE *getrange(
 	const char *host,
@@ -25,13 +26,12 @@ FILE *getrange(
 		exit(1);
 	}
 
-	fprintf(sockf,
-		"GET %s HTTP/1.1\r\n"
-		"Host: %s:%s\r\n"  // XXX: service needs to be numeric
-		// "Accept: */*\r\n"
-		"User-Agent: hyperfs\r\n"
-		"Range: bytes=%zu-%zu\r\n"
-		"\r\n", path, host, port, start, end);
+	SENDO(sockf, "GET %s HTTP/1.1", path);
+	SENDO(sockf, "Host: %s", host);
+	// SENDO(sockf, "Accept: */*");
+	SENDO(sockf, "User-Agent: hyperfs");
+	SENDO(sockf, "Range: bytes=%zu-%zu", start, end);
+	SENDO(sockf, "");
 
 	fflush(sockf); // XXX: check
 
