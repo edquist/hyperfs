@@ -65,7 +65,7 @@ int a2i4(const char *s)
 	return a2i2(s) * 100 + a2i2(s + 2);
 }
 
-/* date_parse - parse http date header, aspiringly fast
+/* http_date_parse - parse http date header, aspiringly fast
  *
  * "Last-Modified: Wed, 09 Nov 2022 11:12:50 GMT"
  *
@@ -79,7 +79,7 @@ int a2i4(const char *s)
  *   return timegm(&ts) - tz * 36;  // 36 == 60 * 60 / 100
  *
  */
-long date_parse(const char *s)
+long http_date_parse(const char *s)
 {
 	if (isalpha(s[0]) && isalpha(s[1]) && isalpha(s[2]) && s[3] == ',')
 		s += 4;
