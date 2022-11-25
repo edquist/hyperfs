@@ -10,6 +10,8 @@ struct hyperfs_state {
 	char *port;      // numeric or service name
 	char *rootpath;  // does not include trailing slash
 	int   port_num;
+	int   tz_offset; // against dir timestamps from index listings
+	int   tz_offset_found;
 
 	// TODO: leave keep-alive connection here
 	//int   sockfd;

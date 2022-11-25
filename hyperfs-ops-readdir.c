@@ -10,7 +10,7 @@
 #include "hyperfs-get.h"    // hyperget
 #include "ministat.h"       // struct ministat
 #include "cheddar.h"        // pfxcasematch
-
+#include "date_parse.h"     // get_tstamp
 
 
 static inline
@@ -183,8 +183,13 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 	while (line_in(input_rem, linebuf, sizeof linebuf, sockf)) {
 		size_t line_len = strlen(linebuf);
 		regmatch_t href = get_href(linebuf);
-		if (href.rm_so >= 0 && maybe_take_path(linebuf, href))
+		if (href.rm_so >= 0 && maybe_take_path(linebuf, href)) {
 			n++;
+			long ts = get_tstamp(linebuf + href.rm_eo);
+			if (ts) {
+				// TODO: set for dirs
+			}
+		}
 		if (line_len && linebuf[line_len - 1] == '\n') {
 			input_rem -= line_len;  // "Situation Normal"
 		} else if (line_len == input_rem) {
