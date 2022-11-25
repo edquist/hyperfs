@@ -6,6 +6,7 @@
 FILE *getrange(
 	const char *host,
 	const char *port,
+	const char *rootpath,
 	const char *path,
 	off_t start,
 	size_t *len,

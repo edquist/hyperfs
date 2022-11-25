@@ -30,7 +30,7 @@ int main(int argc, char **argv, char **envp)
 
 	buf = malloc(len);
 
-	FILE *sockf = getrange(host, port, path, start, &len, buf);
+	FILE *sockf = getrange(host, port, "", path, start, &len, buf);
 
 	if (!sockf) {
 		perror("getrange");

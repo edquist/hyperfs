@@ -25,11 +25,8 @@ int hyperfs_read(const char *path, char *buf, size_t size,
 
 	struct hyperfs_state *remote = get_hyperfs_state();
 
-	char pathbuf[4096]; // XXX: pass rootpath, path separately to getrange
-	sprintf(pathbuf, "%s%s", remote->rootpath, path);
-
-	FILE *sockf = getrange(remote->host, remote->port, pathbuf, offset,
-	                       &readsize, buf);
+	FILE *sockf = getrange(remote->host, remote->port, remote->rootpath,
+	                       path, offset, &readsize, buf);
 
 	if (sockf) {
 		fclose(sockf);
