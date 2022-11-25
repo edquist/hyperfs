@@ -158,10 +158,10 @@ void mark_dirs(const char *path, const char *name)
  */
 
 static inline
-int line_in(size_t input_rem, char *linebuf, size_t bufsz, FILE *sockf)
+int line_in(size_t n, char *buf, size_t bufsz, FILE *in)
 {
-	size_t size = min(input_rem + 1, bufsz);
-	return input_rem && fgets(linebuf, size, sockf);
+	size_t size = min(n + 1, bufsz);
+	return n && fgets(buf, size, in);
 }
 
 static
