@@ -2,3 +2,5 @@
 .*.swp
 getrange
 hyperfs
+escape
+unescape
