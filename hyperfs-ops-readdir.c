@@ -9,6 +9,8 @@
 #include "escape.h"         // path_is_escaped
 #include "hyperfs-get.h"    // hyperget
 #include "ministat.h"       // struct ministat
+#include "cheddar.h"        // pfxcasematch
+
 
 
 static inline
@@ -45,6 +47,7 @@ int link_check(const char *href, const char *end)
 	    && href[0] != '/'                   // no links to root '/'
 	    && !dot_dir(href)                   // no "." or ".."
 	    && single_path_component(href, end) // no "abc/def" entries
+	    && !pfxcasematch("mailto:", href)   // no mailto links
 	    && !memchr(href, '?', end - href);  // no url query params!
 }
 
