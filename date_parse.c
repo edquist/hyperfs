@@ -1,7 +1,8 @@
-#include <time.h>
+#include <regex.h>      // regex functions
 
 #include "ymdhms.h"
 #include "month_idx.h"
+#include "loggo.h"      // LOG
 
 inline static
 int isalpha(unsigned c)
@@ -125,6 +126,142 @@ long http_date_parse(const char *s)
 	return epoch(&ts);
 }
 
+
+/* now for the regex functions
+ *
+ * these are used for parsing timestamps out of generated file index
+ * listings (html) ... the format is less precise and i'm a bit lazy
+ * to do it all by hand like in http_date_parse
+ *
+ */
+
+static
+long get_tstamp1(const char *line)
+{
+	static regex_t reg;
+	static int reg_compiled = 0;
+
+	// 1. 2022-Oct-12 12:26:24
+
+	regmatch_t m[8];
+	const char *re = "> *([0-9]{4})-([A-Z][a-z]{2})-([0-9]{2})"
+	                 " ([0-2][0-9]):([0-5][0-9])(:([0-5][0-9]))?[ <]";
+
+	if (!reg_compiled) {
+		LOG("[get_tstamp1: doing one-time reg compile]\n");
+		if (regcomp(&reg, re, REG_EXTENDED)) {
+			LOG("[get_tstamp1: regcomp fail]\n");
+			return 0;
+		}
+		reg_compiled = 1;
+	}
+
+	if (regexec(&reg, line, 8, m, 0))
+		return 0;
+
+	struct ymdhmsz ts;
+
+	ts.dt.year  = a2i4      (line + m[1].rm_so);
+	ts.dt.month = month_idx (line + m[2].rm_so);
+	ts.dt.day   = a2i2      (line + m[3].rm_so);
+	ts.tm.hour  = a2i2      (line + m[4].rm_so);
+	ts.tm.min   = a2i2      (line + m[5].rm_so);
+	if (m[7].rm_so >= 0)
+		ts.tm.sec = a2i2(line + m[7].rm_so);
+
+	ts.zz = 0;  // XXX: probably not true; usually server's local TZ
+
+	return epoch(&ts);
+}
+
+
+static
+long get_tstamp2(const char *line)
+{
+	static regex_t reg;
+	static int reg_compiled = 0;
+
+	// 2. 2022-11-25 16:00
+
+	regmatch_t m[8];
+	const char *re = "> *([0-9]{4})-([01][0-9])-([0-3][0-9])"
+	                 " ([0-2][0-9]):([0-5][0-9])(:([0-5][0-9]))?[ <]";
+
+	if (!reg_compiled) {
+		LOG("[get_tstamp2: doing one-time reg compile]\n");
+		if (regcomp(&reg, re, REG_EXTENDED)) {
+			LOG("[get_tstamp2: regcomp fail]\n");
+			return 0;
+		}
+		reg_compiled = 1;
+	}
+
+	if (regexec(&reg, line, 8, m, 0))
+		return 0;
+
+	struct ymdhmsz ts;
+
+	ts.dt.year  = a2i4      (line + m[1].rm_so);
+	ts.dt.month = a2i2      (line + m[2].rm_so);
+	ts.dt.day   = a2i2      (line + m[3].rm_so);
+	ts.tm.hour  = a2i2      (line + m[4].rm_so);
+	ts.tm.min   = a2i2      (line + m[5].rm_so);
+	if (m[7].rm_so >= 0)
+		ts.tm.sec = a2i2(line + m[7].rm_so);
+
+	ts.zz = 0;  // XXX: probably not true; usually server's local TZ
+
+	return epoch(&ts);
+}
+
+
+static
+time_t get_tstamp3(const char *line)
+{
+	static regex_t reg;
+	static int reg_compiled = 0;
+
+	// 3. 13-Jan-2021 19:55
+
+	regmatch_t m[8];
+	const char *re = "> *([0-3][0-9])-([A-Z][a-z]{2})-([0-9]{4})"
+	                 " ([0-2][0-9]):([0-5][0-9])(:([0-5][0-9]))?[ <]";
+
+	if (!reg_compiled) {
+		LOG("[get_tstamp3: doing one-time reg compile]\n");
+		if (regcomp(&reg, re, REG_EXTENDED)) {
+			LOG("[get_tstamp3: regcomp fail]\n");
+			return 0;
+		}
+		reg_compiled = 1;
+	}
+
+	if (regexec(&reg, line, 8, m, 0))
+		return 0;
+
+	struct ymdhmsz ts;
+
+	ts.dt.year  = a2i4      (line + m[3].rm_so);
+	ts.dt.month = month_idx (line + m[2].rm_so);
+	ts.dt.day   = a2i2      (line + m[1].rm_so);
+	ts.tm.hour  = a2i2      (line + m[4].rm_so);
+	ts.tm.min   = a2i2      (line + m[5].rm_so);
+	if (m[7].rm_so >= 0)
+		ts.tm.sec = a2i2(line + m[7].rm_so);
+
+	ts.zz = 0;  // XXX: probably not true; usually server's local TZ
+
+	return epoch(&ts);
+}
+
+
+long get_tstamp(const char *line)
+{
+	long ts;
+	if ((ts = get_tstamp1(line))) return ts;
+	if ((ts = get_tstamp2(line))) return ts;
+	return    get_tstamp3(line);
+}
 
 /* vim: set noexpandtab sts=0 sw=8 ts=8: */
 
