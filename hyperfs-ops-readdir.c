@@ -157,6 +157,12 @@ void mark_dirs(const char *path, const char *name)
  *
  */
 
+static inline
+int line_in(size_t input_rem, char *linebuf, size_t bufsz, FILE *sockf)
+{
+	size_t size = min(input_rem + 1, bufsz);
+	return input_rem && fgets(linebuf, size, sockf);
+}
 
 static
 char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
@@ -170,16 +176,12 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 
 	char *pstart = get_pathbuf(0);
 	char linebuf[4096];
-	int readsize = min(input_rem + 1, sizeof linebuf);
 	int n = 0;
-	while (input_rem && fgets(linebuf, readsize, sockf)) {
+	while (line_in(input_rem, linebuf, sizeof linebuf, sockf)) {
 		size_t line_len = strlen(linebuf);
 		regmatch_t href = get_href(linebuf);
-		if (href.rm_so >= 0) {
-			char *name = maybe_take_path(linebuf, href);
-			if (name)
-				n++;
-		}
+		if (href.rm_so >= 0 && maybe_take_path(linebuf, href))
+			n++;
 		if (line_len && linebuf[line_len - 1] == '\n') {
 			input_rem -= line_len;  // "Situation Normal"
 		} else if (line_len == input_rem) {
@@ -191,7 +193,6 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 			LOG("[cache_hyperdents: unexpected NUL in input]\n");
 			break;
 		}
-		readsize = min(input_rem + 1, sizeof linebuf);
 	}
 
 	LOG("[cache_hyperdents: read and cached %d dir entries]\n", n);
