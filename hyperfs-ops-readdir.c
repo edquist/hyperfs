@@ -128,6 +128,15 @@ void mark_dir(const char *path, const char *name)
 	}
 }
 
+static
+void mark_dirs(const char *path, const char *name)
+{
+	while (*name) {
+		if (name[0] == '/')
+			mark_dir(path, name);
+		name += strlen(name) + 1;
+	}
+}
 
 /* currently we store dir entries in a simple flat list, terminated by an
  * empty string:
@@ -189,12 +198,7 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 	addpath("");
 	fclose(sockf);
 
-	char *name = pstart;
-	while (*name) {
-		if (name[0] == '/')
-			mark_dir(path, name);
-		name += strlen(name) + 1;
-	}
+	mark_dirs(path, pstart);
 
 	return pstart;
 }
