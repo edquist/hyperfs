@@ -1,4 +1,5 @@
 #include <fuse.h>           // struct fuse_file_info
+#include <errno.h>          // EREMOTEIO
 
 #include "hyperfs-finfo.h"  // union hyperfs_finfo
 #include "hyperfs-state.h"  // struct hyperfs_state, get_hyperfs_state
@@ -29,11 +30,15 @@ int hyperfs_read(const char *path, char *buf, size_t size,
 
 	FILE *sockf = getrange(remote->host, remote->port, pathbuf, offset,
 	                       &readsize, buf);
-	fclose(sockf);
 
-	LOG("[read: retrieved size=[%zu] ]\n", readsize);
-
-	return readsize;
+	if (sockf) {
+		fclose(sockf);
+		LOG("[read: retrieved size=[%zu] ]\n", readsize);
+		return readsize;
+	} else {
+		LOG("[read: getrange failed]\n");
+		return -EREMOTEIO;
+	}
 }
 
 
