@@ -68,7 +68,7 @@ int hexdecode_nib(char nib)
 static
 unsigned char hexdecode(const char *hex)
 {
-	return (hexdecode_nib(hex[0]) << 8) | hexdecode_nib(hex[1]);
+	return (hexdecode_nib(hex[0]) << 4) | hexdecode_nib(hex[1]);
 }
 
 int path_is_escaped(const char *s)
@@ -81,7 +81,7 @@ char *decode_escaped(char *dest, const char *s)
 {
 	while (*s) {
 		if (*s == '%' && isxdigit(s[1]) && isxdigit(s[2])) {
-			*dest++ = hexdecode(s);
+			*dest++ = hexdecode(s + 1);
 			s += 3;
 		} else if (*s == '&' && strncmp(s + 1, "amp;", 4) == 0) {
 			*dest++ = '&';
