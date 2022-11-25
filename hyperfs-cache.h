@@ -17,6 +17,7 @@ char *add_pathbuf(const char *buf, size_t size);
 char *add_pathlen(const char *buf, size_t len);
 char **addptr(char *p);
 char **get_ptrbuf(size_t count);
+void reset_pathbuf(char *next);
 
 
 /* vim: set noexpandtab sts=0 sw=8 ts=8: */

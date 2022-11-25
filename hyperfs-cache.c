@@ -97,6 +97,11 @@ char *get_pathbuf(size_t size)
 	return ret;
 }
 
+void reset_pathbuf(char *next)
+{
+	pathbuf_next = next;
+}
+
 char *add_pathbuf(const char *buf, size_t size)
 {
 	char *dest = get_pathbuf(size);
