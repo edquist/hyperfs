@@ -1,5 +1,4 @@
 #include <stdio.h>  // printf, FILE
-#include <stdlib.h> // exit
 #include <errno.h>  // perror
 
 #include "connor.h"  // tcp_connect
@@ -23,7 +22,7 @@ FILE *getrange(
 
 	if (!sockf) {
 		perror("fdopen");
-		exit(1);
+		return NULL;
 	}
 
 	SENDO(sockf, "GET %s HTTP/1.1", path);
@@ -33,16 +32,15 @@ FILE *getrange(
 	SENDO(sockf, "Range: bytes=%zu-%zu", start, end);
 	SENDO(sockf, "");
 
-	fflush(sockf); // XXX: check
-
-	// and now read...
+	if (fflush(sockf)) {
+		perror("fflush");
+		return NULL;
+	}
 
 	int ret = get_resp_data(sockf, buf, len);
 	if (ret < 0) {
 		fprintf(stderr, "get_resp_data returned %d\n", ret);
-
-		// XXX: ok don't die here.....
-		exit(1);
+		return NULL;
 	}
 
 	return sockf;
