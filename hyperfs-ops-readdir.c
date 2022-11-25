@@ -128,6 +128,27 @@ void mark_dir(const char *path, const char *name)
 	}
 }
 
+
+/* currently we store dir entries in a simple flat list, terminated by an
+ * empty string:
+ *
+ *   "path1\0path2\0/path3\n...pathN\0\0"
+ *
+ * if a path refers to a subdir, it _starts_ with a slash.
+ *
+ * another similar idea would be always to store the type as an initial char,
+ * eg:
+ *
+ *     struct hyperdir_ent {
+ *             char type;
+ *             char name[];
+ *     };
+ *
+ * (but we do not do this)
+ *
+ */
+
+
 static
 char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 {
