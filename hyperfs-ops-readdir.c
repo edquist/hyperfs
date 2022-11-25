@@ -168,25 +168,19 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 		regmatch_t href = get_href(linebuf);
 		if (href.rm_so >= 0) {
 			char *name = maybe_take_path(linebuf, href);
-			if (name) {
+			if (name)
 				n++;
-			}
 		}
 		if (line_len && linebuf[line_len - 1] == '\n') {
-			// "Situation Normal"
-			input_rem -= line_len;
+			input_rem -= line_len;  // "Situation Normal"
 		} else if (line_len == input_rem) {
-			// EOF hit, without EOL, also OK
-			input_rem = 0;
-			break;
+			break;  // EOF hit, without EOL, also OK
 		} else {
 			// NUL in input stream; those jerks.
 			// No way to tell how long this line actually was,
 			// so treat this as the end and cut off the input.
 			LOG("[cache_hyperdents: unexpected NUL in input]\n");
-			addpath("");
-			fclose(sockf);
-			return pstart;
+			break;
 		}
 		readsize = min(input_rem + 1, sizeof linebuf);
 	}
