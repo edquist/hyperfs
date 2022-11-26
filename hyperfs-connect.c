@@ -1,7 +1,14 @@
 
-#include "hyperfs-state.h"
-#include "connor.h"  // get_tcp_addrinfo, connect_first
-#include "loggo.h"   // LOG
+#include "hyperfs-state.h"  // struct hyperfs_state
+#include "connor.h"         // get_tcp_addrinfo, connect_first
+#include "loggo.h"          // LOG
+
+void hyperclose(struct hyperfs_state *remote)
+{
+	if (remote->sockf)
+		fclose(remote->sockf);
+	remote->sockf = NULL;
+}
 
 
 int hyperconnect(struct hyperfs_state *remote)
