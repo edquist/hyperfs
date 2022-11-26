@@ -49,7 +49,6 @@ int connect_first(const struct addrinfo *rp)
 struct addrinfo *get_tcp_addrinfo(const char *host, const char *port)
 {
 	struct addrinfo *result;
-	int err, sock;
 
 	struct addrinfo hints = {
 		.ai_family   = AF_INET,
@@ -58,7 +57,7 @@ struct addrinfo *get_tcp_addrinfo(const char *host, const char *port)
 		.ai_protocol = IPPROTO_TCP
 	};
 
-	err = getaddrinfo(host, port, &hints, &result);
+	int err = getaddrinfo(host, port, &hints, &result);
 	if (err) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(err));
 		return NULL;
