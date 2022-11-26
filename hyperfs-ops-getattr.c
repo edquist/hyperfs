@@ -23,11 +23,12 @@ void send_head_plain(
 	FILE *sockf = remote->sockf;
 	SENDO(sockf, "HEAD %s%s HTTP/1.1", remote->rootpath, path);
 	SENDO(sockf, "Host: %s", remote->host);  // skip port
+	SENDO(sockf, "User-Agent: hyperfs");
 	SENDO(sockf, "Connection: keep-alive");
 	SENDO(sockf, "");
 
 	if (fflush(sockf)) {
-		LOG("[send_get_plain: fflush failed; is connection closed?]\n");
+		LOG("[send_head_plain: fflush failed; is conn closed?]\n");
 		perror("fflush");
 	}
 }
