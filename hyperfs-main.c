@@ -118,6 +118,7 @@ int main(int argc, char **argv, char **envp)
 
 	*fuse_argp++ = "-s";        // single-threaded fs, please
 	*fuse_argp++ = fsname_opt;
+	*fuse_argp++ = "-osubtype=hyperfs";
 	*fuse_argp   = NULL;
 	int fuse_argc = fuse_argp - fuse_args;
 
