@@ -3,9 +3,10 @@
 
 #include "hyperfs-finfo.h"  // union hyperfs_finfo
 #include "hyperfs-state.h"  // struct hyperfs_state, get_hyperfs_state
-#include "getrange.h"       // getrange
+#include "hyperfs-range.h"  // hyperget_range
 #include "loggo.h"          // LOG
 #include "ministat.h"       // hyperfs_state's struct ministat ... Hmm.
+
 
 static inline
 size_t min(size_t a, size_t b) { return a <= b ? a : b; }
@@ -25,15 +26,13 @@ int hyperfs_read(const char *path, char *buf, size_t size,
 
 	struct hyperfs_state *remote = get_hyperfs_state();
 
-	FILE *sockf = getrange(remote->host, remote->port, remote->rootpath,
-	                       path, offset, &readsize, buf);
+	int numin = hyperget_range(remote, path, offset, readsize, buf);
 
-	if (sockf) {
-		fclose(sockf);
-		LOG("[read: retrieved size=[%zu] ]\n", readsize);
+	if (numin >= 0) {
+		LOG("[read: retrieved size=[%d] ]\n", numin);
 		return readsize;
 	} else {
-		LOG("[read: getrange failed]\n");
+		LOG("[read: hyperget_range failed with %d]\n", numin);
 		return -EREMOTEIO;
 	}
 }
