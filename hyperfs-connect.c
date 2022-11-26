@@ -6,8 +6,10 @@
 
 int hyperconnect(struct hyperfs_state *remote)
 {
-	if (remote->sockf)
+	if (remote->sockf) {
 		fclose(remote->sockf);
+		remote->sockf = NULL;
+	}
 	if (!remote->ainfo) {
 		remote->ainfo = get_tcp_addrinfo(remote->host, remote->port);
 		if (!remote->ainfo) {
@@ -22,6 +24,8 @@ int hyperconnect(struct hyperfs_state *remote)
 		LOG("[hyperconnect: could not connect]\n");
 		perror("connect_first");
 		return -1;
+	} else {
+		LOG("[hyperconnect: sock is on %d]\n", sock);
 	}
 
 	remote->sockf = fdopen(sock, "r+");
