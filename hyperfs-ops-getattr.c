@@ -5,6 +5,7 @@
 #include <sys/stat.h>  // S_IFREG, S_IFDIR, S_IFLNK
 #include <string.h>    // strerror, strstr
 
+#include "hyperfs-connect.h" // hyperconnect
 #include "hyperfs-cache.h"  // get_cached_path_info, set_cached_path_info
 #include "hyperfs-state.h"  // struct hyperfs_state, get_hyperfs_state
 #include "ministat.h"       // get_cached_path_info, set_cached_path_info
@@ -16,13 +17,13 @@
 
 static
 void send_head_plain(
-	FILE                       *sockf,
 	const struct hyperfs_state *remote,
 	const char                 *path)
 {
+	FILE *sockf = remote->sockf;
 	SENDO(sockf, "HEAD %s%s HTTP/1.1", remote->rootpath, path);
 	SENDO(sockf, "Host: %s", remote->host);  // skip port
-	SENDO(sockf, "Connection: close");
+	SENDO(sockf, "Connection: keep-alive");
 	SENDO(sockf, "");
 
 	if (fflush(sockf)) {
@@ -34,7 +35,6 @@ void send_head_plain(
 
 static
 void send_head_escaped(
-	FILE                       *sockf,
 	const struct hyperfs_state *remote,
 	const char                 *path,
 	int                         n)
@@ -45,7 +45,7 @@ void send_head_escaped(
 	LOG("[send_head_escaped: escaping path to size %d]\n", n);
 
 	escape_raw(p, path);
-	send_head_plain(sockf, remote, p);
+	send_head_plain(remote, p);
 
 	if (p != buf)
 		free(p);
@@ -55,33 +55,39 @@ void send_head_escaped(
 
 static
 int get_head_info(
-	const  struct hyperfs_state *remote,
-	const  char                 *path,
-	struct resp_info            *resp)
+	struct hyperfs_state *remote,
+	const  char          *path,
+	struct resp_info     *resp)
 {
-	int sock = tcp_connect(remote->host, remote->port);
-	if (sock < 0) {
-		perror("tcp_connect");
-		LOG("[get_head_info: tcp_connect returned %d]\n", sock);
+	if (!remote->sockf && hyperconnect(remote) < 0)
 		return -1;
-	}
-	FILE *sockf = fdopen(sock, "r+");
-	LOG("[get_http_path_info: sock is on %d]\n", sock);
-
-	if (!sockf) {
-		LOG("[fdopen: %s]\n", strerror(errno));
-		return -1;
-	}
 
 	int n = path_needs_escape(path);
 	if (n) {
-		send_head_escaped(sockf, remote, path, n);
+		send_head_escaped(remote, path, n);
 	} else {
-		send_head_plain(sockf, remote, path);
+		send_head_plain(remote, path);
 	}
 
-	int ret = get_resp_info(sockf, resp);
-	fclose(sockf);  // TODO: leave open
+	int ret = get_resp_info(remote->sockf, resp);
+	if (ret < 0)
+		LOG("[get_head_info: get_resp_info returned %d]\n", ret);
+	return ret;
+}
+
+static
+int get_head_info2x(
+	struct hyperfs_state *remote,
+	const  char          *path,
+	struct resp_info     *resp)
+{
+	int ret = get_head_info(remote, path, resp);
+	if (ret < 0) {
+		LOG("[get_head_info2x: reconnecting to retry get_head_info]\n");
+		if (hyperconnect(remote) < 0)
+			return -1;
+		ret = get_head_info(remote, path, resp);
+	}
 	return ret;
 }
 
@@ -144,7 +150,7 @@ int get_http_path_info(
 
 	struct resp_info resp;
 
-	int ret = get_head_info(remote, path, &resp);
+	int ret = get_head_info2x(remote, path, &resp);
 
 	if (ret < 0) {
 		LOG("[get_http_path_info: get_resp_info returned %d]\n", ret);
