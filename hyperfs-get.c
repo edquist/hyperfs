@@ -2,6 +2,7 @@
 #include <stdlib.h>  // malloc, free  :(
 #include <unistd.h>  // close
 
+#include "hyperfs-connect.h" // hyperconnect
 #include "hyperfs-state.h"  // struct hyperfs_state
 #include "connor.h"         // tcp_connect
 #include "cheddar.h"        // struct resp_info
@@ -12,13 +13,13 @@
 
 static
 void send_get_plain(
-	FILE                 *sockf,
 	struct hyperfs_state *remote,
 	const char           *path)
 {
 	if (path[0] == '/' && path[1] == '\0')
 		path++;  // avoid double-slash for fs root
 
+	FILE *sockf = remote->sockf;
 	SENDO(sockf, "GET %s%s/ HTTP/1.1", remote->rootpath, path);
 	SENDO(sockf, "Host: %s", remote->host);  // skip port
 	// SENDO(sockf, "Accept: */*");
@@ -34,7 +35,6 @@ void send_get_plain(
 
 static
 void send_get_escaped(
-	FILE                 *sockf,
 	struct hyperfs_state *remote,
 	const char           *path,
 	int                   n)
@@ -45,7 +45,7 @@ void send_get_escaped(
 	LOG("[send_get_escaped: escaping path to size %d]\n", n);
 
 	escape_raw(p, path);
-	send_get_plain(sockf, remote, p);
+	send_get_plain(remote, p);
 
 	if (p != buf)
 		free(p);
@@ -59,44 +59,34 @@ FILE *hyperget(
 {
 	LOG("[hyperget: '%s']\n", path);
 
-	int sock = tcp_connect(remote->host, remote->port);
-	if (sock < 0) {
-		perror("tcp_connect");
-		LOG("[hyperget: tcp_connect returned %d]\n", sock);
-		return NULL;
-	}
-
-	FILE *sockf = fdopen(sock, "r+");
-	if (!sockf) {
-		perror("fdopen");
-		LOG("[hyperget: fdopen failed]\n");
-		close(sock);
+	if (!remote->sockf && hyperconnect(remote) < 0) {
+		LOG("[hyperget: hyperconnect failed]\n");
 		return NULL;
 	}
 
 	int n = path_needs_escape(path);
 	if (n) {
-		send_get_escaped(sockf, remote, path, n);
+		send_get_escaped(remote, path, n);
 	} else {
-		send_get_plain(sockf, remote, path);
+		send_get_plain(remote, path);
 	}
 
 	struct resp_info resp;
-        int ret = get_resp_info(sockf, &resp);
+        int ret = get_resp_info(remote->sockf, &resp);
 	if (ret < 0) {
 		LOG("[hyperget: get_resp_info returned %d]\n", ret);
-		fclose(sockf);
+		fclose(remote->sockf);
+		remote->sockf = NULL;
 		return NULL;
 	}
 
 	LOG("[hyperget: got code %d]\n", resp.code);
 	if (resp.code < 200 || 299 < resp.code) {
-		fclose(sockf);
 		return NULL;
 	}
 
 	*content_len = resp.content_length;
-	return sockf;
+	return remote->sockf;
 }
 
 
