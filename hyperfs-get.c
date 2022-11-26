@@ -52,6 +52,23 @@ void send_get_escaped(
 }
 
 
+
+static
+int get_resp_info2x(
+	struct hyperfs_state *remote,
+	struct resp_info     *resp)
+{
+	int ret = get_resp_info(remote->sockf, resp);
+	if (ret < 0) {
+		LOG("[hyperget: reconnecting to retry get_resp_info]\n");
+		if (hyperconnect(remote) < 0)
+			return -1;
+		ret = get_resp_info(remote->sockf, resp);
+	}
+	return ret;
+}
+
+
 FILE *hyperget(
 	struct hyperfs_state *remote,
 	const char           *path,
@@ -72,11 +89,10 @@ FILE *hyperget(
 	}
 
 	struct resp_info resp;
-        int ret = get_resp_info(remote->sockf, &resp);
+	int ret = get_resp_info2x(remote, &resp);
 	if (ret < 0) {
 		LOG("[hyperget: get_resp_info returned %d]\n", ret);
-		fclose(remote->sockf);
-		remote->sockf = NULL;
+		hyperclose(remote);
 		return NULL;
 	}
 
