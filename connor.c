@@ -37,8 +37,10 @@ int connect_first(const struct addrinfo *rp)
 		if ((sock = getsock(rp)) < 0)
 			continue;
 
-		if (getconn(sock, rp) == 0)
+		if (getconn(sock, rp) == 0) {
+			fprintf(stderr, "* connected\n");
 			return sock;
+		}
 
 		close(sock);
 	}
