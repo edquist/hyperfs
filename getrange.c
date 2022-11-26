@@ -40,6 +40,8 @@ FILE *getrange(
 	char *buf)
 {
 	int sock = tcp_connect(host, port);
+	if (sock < 0)
+		return NULL;
 
 	FILE *sockf = fdopen(sock, "r+");
 	off_t end = start + *len - 1;

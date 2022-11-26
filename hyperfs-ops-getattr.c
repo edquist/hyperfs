@@ -60,6 +60,11 @@ int get_head_info(
 	struct resp_info            *resp)
 {
 	int sock = tcp_connect(remote->host, remote->port);
+	if (sock < 0) {
+		perror("tcp_connect");
+		LOG("[get_head_info: tcp_connect returned %d]\n", sock);
+		return -1;
+	}
 	FILE *sockf = fdopen(sock, "r+");
 	LOG("[get_http_path_info: sock is on %d]\n", sock);
 

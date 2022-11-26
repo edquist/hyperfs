@@ -28,7 +28,6 @@ int getconn(int sock, const struct addrinfo *rp)
 	return connect(sock, rp->ai_addr, rp->ai_addrlen);
 }
 
-static
 int connect_first(const struct addrinfo *rp)
 {
 	// follow list of addresses until socket+connect succeeds
@@ -47,7 +46,7 @@ int connect_first(const struct addrinfo *rp)
 	return -1;
 }
 
-int tcp_connect(const char *host, const char *port)
+struct addrinfo *get_tcp_addrinfo(const char *host, const char *port)
 {
 	struct addrinfo *result;
 	int err, sock;
@@ -60,17 +59,26 @@ int tcp_connect(const char *host, const char *port)
 	};
 
 	err = getaddrinfo(host, port, &hints, &result);
-
 	if (err) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(err));
-		exit(1);
+		return NULL;
 	}
 
-	sock = connect_first(result);
+	return result;
+}
+
+int tcp_connect(const char *host, const char *port)
+{
+	struct addrinfo *result = get_tcp_addrinfo(host, port);
+
+	if (!result)
+		return -1;
+
+	int sock = connect_first(result);
 
 	if (sock == -1) {
 		fprintf(stderr, "Could not connect\n");
-		exit(1);
+		return -1;
 	}
 
 	freeaddrinfo(result);
