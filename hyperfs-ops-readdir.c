@@ -171,8 +171,7 @@ static
 char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 {
 	size_t input_rem;
-	FILE *sockf = hyperget(remote, path, &input_rem);
-	if (!sockf) {
+	if (!hyperget(remote, path, &input_rem)) {
 		LOG("[cache_hyperdents: hyperget failed]\n");
 		return NULL;
 	}
@@ -180,7 +179,7 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 	char *pstart = get_pathbuf(0);
 	char linebuf[4096];
 	int n = 0;
-	while (line_in(input_rem, linebuf, sizeof linebuf, sockf)) {
+	while (line_in(input_rem, linebuf, sizeof linebuf, remote->sockf)) {
 		size_t line_len = strlen(linebuf);
 		regmatch_t href = get_href(linebuf);
 		if (href.rm_so >= 0 && maybe_take_path(linebuf, href)) {
@@ -205,7 +204,6 @@ char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 
 	LOG("[cache_hyperdents: read and cached %d dir entries]\n", n);
 	addpath("");
-	fclose(sockf);
 
 	mark_dirs(path, pstart);
 
