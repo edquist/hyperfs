@@ -172,15 +172,26 @@ int set_cached_path_info(const char *path, const struct ministat *st)
 	return ret ? 0 : -1;
 }
 
+static inline
+size_t blocks(size_t bytes)
+{
+	return (bytes + 4095 /* round up */) / 4096 /* num 4k blocks */
+	     * (4096 / 512) /* num 512b blocks */ ;
+}
+
 void expand_ministat(const struct ministat *mst, struct stat *st)
 {
 	// default 0 for unset fields
 	memset(st, 0, sizeof (struct stat));
 	switch (mst->type) {
-	case S_IFDIR: st->st_mode = 0755 | S_IFDIR; break;
+	case S_IFDIR: st->st_mode = 0755 | S_IFDIR;
+	              st->st_size = 4096;
+	              st->st_blocks = blocks(4096);
+		      break;
 	case S_IFREG: st->st_mode = 0644 | S_IFREG;
 	              st->st_size = mst->size;
 	              st->st_atime = st->st_mtime = st->st_ctime = mst->mtime;
+	              st->st_blocks = blocks(mst->size);
 	              break;
 	case S_IFLNK: st->st_mode = 0777 | S_IFLNK;
 	              st->st_size = mst->size;
