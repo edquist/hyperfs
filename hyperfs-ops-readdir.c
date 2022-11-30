@@ -161,16 +161,16 @@ void mark_dirs(const char *path, const char *name)
  */
 
 static
-int line_in(size_t n, char *buf, size_t bufsz, FILE *in)
+int line_in(off_t n, char *buf, size_t bufsz, FILE *in)
 {
 	size_t size = min(n + 1, bufsz);
-	return n && fgets(buf, size, in);
+	return n > 0 && fgets(buf, size, in);
 }
 
 static
 char *cache_hyperdents(struct hyperfs_state *remote, const char *path)
 {
-	size_t input_rem;
+	off_t input_rem;
 	if (!hyperget(remote, path, &input_rem)) {
 		LOG("[cache_hyperdents: hyperget failed]\n");
 		return NULL;

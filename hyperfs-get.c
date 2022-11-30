@@ -93,7 +93,7 @@ int get_index_info2x(
 FILE *hyperget(
 	struct hyperfs_state *remote,
 	const char           *path,
-	size_t               *content_len)
+	off_t                *content_len)
 {
 	LOG("[hyperget: '%s']\n", path);
 

@@ -1,5 +1,7 @@
+#define __ISOC99_SOURCE  // atoll
+
 #include <stdio.h>
-#include <stdlib.h>  // atoi
+#include <stdlib.h>  // atoll
 #include <string.h>  // strlen
 #include <strings.h> // strncasecmp
 #include <time.h>    // time_t
@@ -51,7 +53,7 @@ int get_resp_info(FILE *in, struct resp_info *info)
 		if (buf[0] == '\0')
 			return 0;
 		if ((p = pfxcasematch("Content-Length: ", buf))) {
-			info->content_length = atoi(p);
+			info->content_length = atoll(p);
 		} else if ((p = pfxcasematch("Last-Modified: ", buf))) {
 			info->last_modified = http_date_parse(p);
 		} else if ((p = pfxcasematch("Location: ", buf))) {
