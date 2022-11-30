@@ -6,6 +6,7 @@
 
 struct resp_info {
 	int code;
+	int chunked;
 	off_t content_length;
 	time_t last_modified;
 	char location[1024];

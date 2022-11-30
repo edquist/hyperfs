@@ -43,6 +43,7 @@ int get_resp_info(FILE *in, struct resp_info *info)
 	info->content_length = -1;
 	info->last_modified = 0;
 	info->location[0] = 0;
+	info->chunked = 0;
 	if (!fgets(buf, sizeof buf, in))              return -1;
 	chomp_crlf(buf);
 	LOG("< %s\n", buf);
@@ -56,6 +57,10 @@ int get_resp_info(FILE *in, struct resp_info *info)
 			info->content_length = atoll(p);
 		} else if ((p = pfxcasematch("Last-Modified: ", buf))) {
 			info->last_modified = http_date_parse(p);
+		} else if ((p = pfxcasematch("Transfer-Encoding: ", buf))) {
+			if (strcasecmp(p, "chunked") == 0)
+				info->chunked = 1;
+			// else ???
 		} else if ((p = pfxcasematch("Location: ", buf))) {
 			hdrvalcpy(info->location, p, sizeof info->location);
 		}
@@ -64,6 +69,14 @@ int get_resp_info(FILE *in, struct resp_info *info)
 	return -4;
 }
 
+int get_chunked(char *dest, int len, FILE *in)
+{
+	// TODO: write me!
+
+	fprintf(stderr, "CHUNKED ENCODING NOT IMPLEMENTED\n");
+
+	return 0;  // return bytes read
+}
 
 int get_resp_data(FILE *in, char *dest, size_t *len)
 {
@@ -97,10 +110,15 @@ int get_resp_data(FILE *in, char *dest, size_t *len)
 		}
 	}
 
-	*len = fread(dest, 1, info.content_length, in);
-
-	if (info.content_length != *len) {
-		fprintf(stderr, "got short fread count\n");
+	if (info.chunked) {
+		*len = get_chunked(dest, *len, in);
+	} else if (info.content_length > 0) {
+		*len = fread(dest, 1, info.content_length, in);
+		if (info.content_length != *len)
+			fprintf(stderr, "got short fread count\n");
+	} else {
+		fprintf(stderr, "missing (or zero) content-length  :(\n");
+		*len = 0;
 	}
 
 	return 0;
